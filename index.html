@@ -1,0 +1,2002 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fffaf0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121b2e" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="睿洋做單日記">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>宋睿洋的做單日記</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-64.png">
+<link rel="preload" href="fonts/huninn-diary.woff" as="font" type="font/woff" crossorigin>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f4ef;
+  --card: #fffefb;
+  --card-2: #f3f1ea;
+  --ink: #1d1c1a;
+  --ink-2: #52514e;
+  --muted: #8a887f;
+  --line: #e6e3da;
+  --grid: #ece9e1;
+  --up: #c62828;        /* 台灣習慣：紅＝賺 */
+  --up-mark: #e34948;
+  --up-soft: #fbe3e1;
+  --down: #0f7b3a;      /* 綠＝賠 */
+  --down-mark: #1a9a52;
+  --down-soft: #dcf1e3;
+  --mine: #2a78d6;
+  --bench: #eb6834;
+  --accent: #2a78d6;
+  --accent-ink: #ffffff;
+  --gold: #b7791f;
+  --water: #4a9be8;
+  --shadow: 0 1px 2px rgba(30,28,20,.06), 0 6px 20px rgba(30,28,20,.05);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #121211; --card: #1a1a19; --card-2: #222220; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #8f8e86;
+    --line: #2e2d2a; --grid: #262523; --up: #ff7b72; --up-mark: #e66767; --up-soft: #3a1f1e; --down: #56d18f;
+    --down-mark: #2fae6a; --down-soft: #16301f; --mine: #3987e5; --bench: #d95926; --accent: #3987e5; --gold: #e0a84a; --water: #3987e5;
+    --shadow: 0 1px 2px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #121211; --card: #1a1a19; --card-2: #222220; --ink: #f0efec; --ink-2: #c3c2b7; --muted: #8f8e86;
+  --line: #2e2d2a; --grid: #262523; --up: #ff7b72; --up-mark: #e66767; --up-soft: #3a1f1e; --down: #56d18f;
+  --down-mark: #2fae6a; --down-soft: #16301f; --mine: #3987e5; --bench: #d95926; --accent: #3987e5; --gold: #e0a84a; --water: #3987e5;
+  --shadow: 0 1px 2px rgba(0,0,0,.3);
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 64px; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  font-size: 15px; line-height: 1.55;
+}
+.num, .tile b, td, .cal-cell { font-variant-numeric: tabular-nums; }
+button, input, textarea { font: inherit; color: inherit; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px 80px; }
+.up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--ink-2); }
+.muted { color: var(--muted); }
+h1, h2, h3 { margin: 0; line-height: 1.3; }
+h2 { font-size: 18px; }
+.eyebrow { font-size: 11px; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; margin: 0 0 2px; }
+
+/* top bar */
+.top { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.top-in { max-width: 1080px; margin: 0 auto; padding: 8px 16px; display: flex; align-items: center; gap: 10px; }
+.brand { display: flex; align-items: center; gap: 8px; font-weight: 700; white-space: nowrap; }
+.brand-logo { width: 28px; height: 28px; border-radius: 8px; object-fit: cover; background: var(--accent); color: #fff; display: grid; place-items: center; font-size: 15px; }
+.nav { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a { text-decoration: none; color: var(--ink-2); font-size: 13px; padding: 5px 10px; border-radius: 999px; white-space: nowrap; }
+.nav a:hover { background: var(--card-2); color: var(--ink); }
+.icon-btn { border: 1px solid var(--line); background: var(--card); border-radius: 10px; width: 34px; height: 34px; display: grid; place-items: center; cursor: pointer; flex: none; }
+.icon-btn:hover { border-color: var(--muted); }
+
+/* banners */
+.banner { margin: 12px 0 0; padding: 10px 14px; border-radius: 12px; font-size: 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border: 1px solid var(--line); background: var(--card); }
+.banner.warn { border-color: color-mix(in srgb, var(--gold) 45%, var(--line)); background: color-mix(in srgb, var(--gold) 10%, var(--card)); }
+.banner .sp { flex: 1; }
+
+/* buttons */
+.btn { border: 1px solid var(--line); background: var(--card); padding: 8px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 14px; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.primary:hover { filter: brightness(1.07); }
+.btn.big { padding: 12px 20px; font-size: 16px; border-radius: 12px; }
+.btn.danger { color: var(--up); }
+.btn.small { padding: 4px 10px; font-size: 13px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* cards */
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); margin-top: 16px; }
+.card-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.card-head p.sub { margin: 2px 0 0; font-size: 13px; color: var(--muted); }
+.foot { font-size: 12.5px; color: var(--muted); margin: 10px 0 0; }
+.grid2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 16px; }
+.grid2 > .card { margin-top: 0; }
+.grid2 { margin-top: 16px; }
+@media (max-width: 820px) { .grid2 { grid-template-columns: minmax(0,1fr); } }
+
+/* hero */
+.hero { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1.4fr); gap: 18px; align-items: center; }
+@media (max-width: 760px) { .hero { grid-template-columns: minmax(0,1fr); } }
+.hero-eq { font-size: clamp(34px, 8vw, 48px); font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+.hero-eq small { font-size: 16px; font-weight: 600; color: var(--muted); margin-left: 4px; }
+.hero-today { margin-top: 6px; font-size: 16px; font-weight: 700; }
+.hero-today .muted { font-weight: 400; font-size: 13px; }
+.hero-cta { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+.tile { background: var(--card-2); border-radius: 12px; padding: 10px 12px; min-width: 0; }
+.tile span { display: block; font-size: 12.5px; color: var(--ink-2); }
+.tile b { display: block; font-size: 20px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile em { font-style: normal; font-size: 12px; color: var(--muted); }
+.reminder { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, var(--gold) 15%, transparent); color: var(--gold); font-weight: 600; }
+.reminder.done { background: color-mix(in srgb, var(--down) 12%, transparent); color: var(--down); }
+
+/* summary table */
+.sum-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+@media (max-width: 820px) { .sum-grid { grid-template-columns: minmax(0,1fr); } }
+.sum-group h3 { font-size: 13px; color: var(--muted); font-weight: 600; margin: 0 0 6px; }
+.sum-row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding: 7px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+.sum-row:last-child { border-bottom: 0; }
+.sum-row .k { color: var(--ink-2); display: flex; align-items: center; gap: 4px; }
+.sum-row .k small { color: var(--muted); font-size: 11px; }
+.sum-row .v { font-weight: 700; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.q { border: 0; background: var(--card-2); color: var(--muted); width: 17px; height: 17px; border-radius: 50%; font-size: 11px; line-height: 17px; padding: 0; cursor: help; flex: none; }
+.explain { font-size: 12.5px; color: var(--ink-2); background: var(--card-2); border-radius: 8px; padding: 6px 10px; margin: 0 0 6px; }
+.tips { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.tips li { font-size: 14px; padding: 8px 12px; border-radius: 10px; background: var(--card-2); display: flex; gap: 8px; }
+
+/* charts */
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 18px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 6px; }
+.legend i.dash { border-top-style: dashed; }
+.legend i.box { width: 10px; height: 10px; border: 0; border-radius: 3px; }
+.chart { position: relative; width: 100%; margin-top: 8px; touch-action: pan-y; }
+.chart svg { display: block; width: 100%; overflow: visible; }
+.chart svg:focus { outline: none; }
+.chart svg:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 6px; }
+.chart .axis { fill: var(--muted); font-size: 11px; }
+.chart .gridl { stroke: var(--grid); stroke-width: 1; }
+.chart .zerol { stroke: var(--muted); stroke-width: 1; opacity: .6; }
+.chart .refl { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; }
+.chart .reft { fill: var(--muted); font-size: 11px; }
+.tip { position: absolute; pointer-events: none; z-index: 5; background: var(--card); border: 1px solid var(--line); box-shadow: 0 6px 24px rgba(0,0,0,.12); border-radius: 10px; padding: 8px 10px; font-size: 12.5px; min-width: 140px; opacity: 0; transition: opacity .12s; }
+.tip.show { opacity: 1; }
+.tip .t-date { font-weight: 700; margin-bottom: 4px; }
+.tip .t-row { display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+.tip .t-row span:first-child { color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
+.tip .sw { width: 10px; height: 3px; border-radius: 2px; display: inline-block; }
+.tip b { font-variant-numeric: tabular-nums; }
+.seg { display: inline-flex; background: var(--card-2); border-radius: 10px; padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; padding: 4px 12px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--card); color: var(--ink); font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,.08); }
+.chart-stats { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); }
+.chart-stats b { color: var(--ink); }
+
+/* win rate */
+.wr { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
+@media (max-width: 520px) { .wr { grid-template-columns: 1fr; } }
+.wr-box { background: var(--card-2); border-radius: 12px; padding: 12px; }
+.wr-box .big { font-size: 26px; font-weight: 800; }
+.wr-box .lbl { font-size: 12.5px; color: var(--ink-2); }
+.wr-bar { display: flex; height: 12px; border-radius: 6px; overflow: hidden; gap: 2px; margin: 8px 0 6px; background: var(--card); }
+.wr-bar div { height: 100%; }
+.wr-cap { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); }
+.pay-row { display: grid; grid-template-columns: 52px 1fr auto; align-items: center; gap: 8px; font-size: 12.5px; margin-top: 6px; }
+.pay-track { height: 10px; background: var(--card); border-radius: 5px; overflow: hidden; }
+.pay-track div { height: 100%; border-radius: 0 4px 4px 0; }
+
+/* calendar */
+.cal-nav { display: flex; align-items: center; gap: 8px; }
+.cal-nav strong { min-width: 96px; text-align: center; font-size: 16px; }
+.cal-sum { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: var(--ink-2); margin: 4px 0 10px; }
+.cal-sum b { color: var(--ink); }
+.cal { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)) minmax(0,.9fr); gap: 4px; }
+.cal-h { font-size: 12px; color: var(--muted); text-align: center; padding: 2px 0; }
+.cal-cell { min-height: 64px; border-radius: 10px; padding: 5px 6px; background: var(--card-2); display: flex; flex-direction: column; gap: 1px; font-size: 12px; position: relative; min-width: 0; overflow: hidden; }
+.cal-cell.out { background: transparent; }
+.cal-cell.empty .d { color: var(--muted); }
+.cal-cell .d { font-size: 11px; color: var(--ink-2); }
+.cal-cell .p { font-weight: 700; font-size: 13px; white-space: nowrap; }
+.cal-cell .r { font-size: 11px; opacity: .85; white-space: nowrap; }
+.cal-cell .c { font-size: 10.5px; color: var(--gold); white-space: nowrap; }
+.cal-cell.today { box-shadow: inset 0 0 0 2px var(--accent); }
+.cal-cell.week { background: transparent; border: 1px dashed var(--line); }
+.cal-cell button.cell-btn { all: unset; position: absolute; inset: 0; cursor: pointer; border-radius: 10px; }
+.cal-cell button.cell-btn:focus-visible { outline: 2px solid var(--accent); }
+.cal-legend { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
+.cal-legend span.sq { width: 14px; height: 14px; border-radius: 4px; display: inline-block; }
+
+/* leak bucket */
+.leak { display: grid; grid-template-columns: 170px 1fr; gap: 18px; align-items: center; }
+@media (max-width: 600px) { .leak { grid-template-columns: 1fr; justify-items: center; } }
+.bucket svg { width: 160px; height: auto; display: block; }
+.drop { animation: drip 2.2s infinite ease-in; opacity: 0; }
+.drop.d2 { animation-delay: .7s; } .drop.d3 { animation-delay: 1.4s; }
+@keyframes drip { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 1; } 100% { transform: translateY(46px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .drop { animation: none; opacity: 1; } html { scroll-behavior: auto; } }
+.leak-eq { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: var(--card-2); border-radius: 12px; padding: 10px 12px; font-size: 14px; margin-top: 10px; }
+.leak-eq .op { color: var(--muted); font-weight: 700; }
+.leak-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; }
+@media (max-width: 520px) { .leak-tiles { grid-template-columns: 1fr 1fr; } }
+.leak-tiles .tile b { font-size: 18px; }
+
+/* table */
+.tbl-wrap { overflow-x: auto; margin: 0 -4px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { text-align: right; font-weight: 600; color: var(--muted); font-size: 12px; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { text-align: right; padding: 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+td.note { text-align: left; white-space: normal; min-width: 160px; max-width: 260px; color: var(--ink-2); font-size: 12.5px; }
+
+/* empty / onboarding */
+.onboard { text-align: center; padding: 34px 18px; }
+.onboard .emoji { font-size: 44px; }
+.onboard h2 { font-size: 22px; margin: 8px 0 6px; }
+.onboard p { color: var(--ink-2); max-width: 520px; margin: 0 auto 16px; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 640px; margin: 18px auto 0; text-align: left; }
+@media (max-width: 600px) { .steps { grid-template-columns: 1fr; } }
+.steps div { background: var(--card-2); border-radius: 12px; padding: 10px 12px; font-size: 13.5px; }
+.steps b { display: block; margin-bottom: 2px; }
+
+/* dialog */
+dialog { border: 0; border-radius: 18px; padding: 0; width: min(460px, calc(100vw - 24px)); background: var(--card); color: var(--ink); box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+dialog::backdrop { background: rgba(10,10,8,.45); }
+.dlg { padding: 20px; max-height: calc(100dvh - 40px); overflow-y: auto; }
+.dlg h2 { font-size: 20px; }
+.dlg .sub { color: var(--muted); font-size: 13px; margin: 2px 0 14px; }
+.field { display: grid; gap: 4px; margin-bottom: 12px; }
+.field > span { font-size: 13.5px; font-weight: 600; }
+.field > span small { font-weight: 400; color: var(--muted); }
+.field input, .field textarea { width: 100%; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 10px 12px; font-size: 16px; }
+.field input:focus, .field textarea:focus { outline: 2px solid var(--accent); border-color: transparent; }
+.field input.huge { font-size: 26px; font-weight: 800; padding: 10px 12px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.flow-seg { display: flex; gap: 6px; margin-bottom: 6px; }
+.flow-seg button { flex: 1; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 7px; cursor: pointer; font-size: 13.5px; }
+.flow-seg button[aria-pressed="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg)); font-weight: 700; }
+.preview { background: var(--card-2); border-radius: 12px; padding: 10px 12px; font-size: 14px; margin-bottom: 14px; }
+.preview b { font-size: 18px; }
+.dlg-actions { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.dlg-actions .sp { flex: 1; }
+details.more summary { cursor: pointer; font-size: 13.5px; color: var(--ink-2); margin-bottom: 10px; }
+.err { color: var(--up); font-size: 13px; min-height: 1em; margin: 0 0 8px; }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; opacity: 0; transition: .25s; z-index: 50; pointer-events: none; max-width: calc(100vw - 32px); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.set-list { display: grid; gap: 8px; }
+.set-list .btn { text-align: left; }
+.hidden { display: none !important; }
+.sync-badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap; background: color-mix(in srgb, var(--down-mark) 16%, var(--card)); color: var(--down); border: 1px solid color-mix(in srgb, var(--down-mark) 30%, transparent); }
+.sync-badge.syncing { background: color-mix(in srgb, var(--accent) 14%, var(--card)); color: var(--accent); border-color: transparent; }
+.sync-badge.fail { background: color-mix(in srgb, var(--gold) 18%, var(--card)); color: var(--gold); border-color: transparent; }
+.sync-badge.view { background: var(--grad); color: #fff; border: 0; }
+.sync-line { margin-top: -8px !important; }
+.code-box { background: var(--grad-soft); border-radius: 12px; padding: 10px 12px 2px; margin-bottom: 12px; }
+.code-box .field { margin-bottom: 4px; }
+.code-row { display: flex; gap: 8px; }
+.code-row input { flex: 1; min-width: 0; font-size: 15px !important; }
+.code-on { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 13.5px; font-weight: 600; padding: 4px 0 2px; }
+.code-on span { flex: 1 1 100%; }
+.install { position: relative; margin-top: 12px; padding: 14px 16px; border-radius: 16px; background: var(--grad); color: #fff; box-shadow: 0 12px 28px -14px var(--glow); }
+.install b { font-size: 16px; }
+.install ol { margin: 8px 0 4px; padding-left: 20px; font-size: 14px; line-height: 1.7; }
+.install .share { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: rgba(255,255,255,.25); font-size: 13px; vertical-align: -4px; }
+.install small { display: block; font-size: 12.5px; opacity: .92; }
+.install .x { position: absolute; top: 8px; right: 8px; border: 0; background: rgba(255,255,255,.22); color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px; }
+.install .btn { background: #fff; color: #7c3aed; border: 0; margin-top: 6px; }
+body.view-mode #setBtn { display: none; }
+body.view-mode #tabAdd { visibility: hidden; }
+
+/* ---------- 手機版：底部分頁、單張圖表、卡片式紀錄、底部滑出輸入 ---------- */
+.dlg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.date-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.date-chips { display: flex; gap: 6px; }
+.date-chips button, .chips button { border: 1px solid var(--line); background: var(--bg); border-radius: 999px; padding: 7px 14px; font-size: 14px; cursor: pointer; white-space: nowrap; color: var(--ink-2); }
+.date-chips button[aria-pressed="true"], .chips button[aria-selected="true"] { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, var(--card)); color: var(--ink); font-weight: 700; }
+.date-row input[type=date] { flex: 1; min-width: 140px; border: 1px solid var(--line); background: var(--bg); border-radius: 10px; padding: 7px 10px; font-size: 16px; }
+.dlg-actions.sticky { position: sticky; bottom: 0; background: var(--card); padding: 12px 0 14px; margin-top: 4px; }
+.sum-group > summary { list-style: none; }
+.sum-group > summary::-webkit-details-marker { display: none; }
+.sum-group > summary .peek { display: none; }
+body:not(.m) .sum-group > summary { pointer-events: none; }
+.tabbar, .chips, .log-cards { display: none; }
+.lc-month { display: flex; justify-content: space-between; font-size: 13px; color: var(--ink-2); padding: 10px 2px 0; }
+.log-card { all: unset; box-sizing: border-box; display: grid; grid-template-columns: 50px 1fr 12px; column-gap: 10px; row-gap: 2px; align-items: center; background: var(--card-2); border-radius: 12px; padding: 10px 12px; cursor: pointer; width: 100%; -webkit-tap-highlight-color: transparent; }
+.log-card:active { transform: scale(.99); }
+.log-card:focus-visible { outline: 2px solid var(--accent); }
+.lc-date { grid-row: 1 / span 2; font-weight: 700; font-size: 16px; display: flex; flex-direction: column; line-height: 1.2; }
+.lc-date small { font-weight: 400; color: var(--muted); font-size: 12px; }
+.lc-main { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-variant-numeric: tabular-nums; }
+.lc-main b { font-size: 17px; }
+.lc-main small { font-size: 13px; font-weight: 600; }
+.lc-eq { font-size: 12.5px; color: var(--ink-2); display: flex; gap: 6px; flex-wrap: wrap; align-items: center; grid-column: 2; font-variant-numeric: tabular-nums; }
+.lc-tag { background: var(--card); border-radius: 999px; padding: 0 8px; font-size: 11.5px; }
+.lc-note { grid-column: 2 / 4; font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+.lc-go { grid-column: 3; grid-row: 1 / span 2; color: var(--muted); font-size: 20px; }
+@keyframes sheetUp { from { transform: translateY(60px); opacity: .4; } to { transform: none; opacity: 1; } }
+@media (max-width: 760px) {
+  body { font-size: 15.5px; }
+  .nav { display: none; }
+  .brand { flex: 1; min-width: 0; }
+  .brand span:last-child { overflow: hidden; text-overflow: ellipsis; }
+  body.m [data-tab]:not(.tab-on) { display: none !important; }
+  body.m [data-chart]:not(.chart-on) { display: none !important; }
+  body.m .toast { bottom: calc(92px + env(safe-area-inset-bottom)); }
+  body.m .wrap { padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+  .card { padding: 14px; border-radius: 14px; margin-top: 12px; }
+  .card-head { margin-bottom: 8px; }
+  h2 { font-size: 17px; }
+  .hero-eq { font-size: 42px; }
+  .tile b { font-size: 19px; }
+  body.m .tabbar { display: grid; position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; grid-template-columns: repeat(5, 1fr); background: color-mix(in srgb, var(--card) 94%, transparent); backdrop-filter: blur(12px); border-top: 1px solid var(--line); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
+  .tabbar button { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 11.5px; color: var(--muted); padding: 2px 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .tabbar .ic { font-size: 21px; line-height: 1.15; filter: grayscale(1); opacity: .7; }
+  .tabbar button[aria-current="page"] { color: var(--accent); font-weight: 700; }
+  .tabbar button[aria-current="page"] .ic { filter: none; opacity: 1; }
+  .tabbar .add .ic { width: 54px; height: 54px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; font-size: 30px; font-weight: 300; margin-top: -24px; box-shadow: 0 6px 18px rgba(0,0,0,.25); filter: none; opacity: 1; border: 4px solid var(--bg); }
+  .tabbar .add { color: var(--accent); font-weight: 700; }
+  body.m .chips { display: flex; position: sticky; top: 51px; z-index: 10; gap: 6px; overflow-x: auto; scrollbar-width: none; background: var(--bg); margin: 0 -16px; padding: 10px 16px 4px; }
+  .chips::-webkit-scrollbar { display: none; }
+  body.m .grid2 { margin-top: 0; display: block; }
+  body.m .grid2 > .card { margin-top: 12px; }
+  body.m .sum-grid { gap: 8px; }
+  body.m .sum-group { background: var(--card-2); border-radius: 12px; padding: 0 12px; }
+  body.m .sum-group > summary { cursor: pointer; padding: 12px 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; -webkit-tap-highlight-color: transparent; }
+  body.m .sum-group > summary h3 { margin: 0; font-size: 14.5px; color: var(--ink); flex: 1; }
+  body.m .sum-group > summary .peek { display: block; font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; }
+  body.m .sum-group > summary::after { content: '›'; color: var(--muted); font-size: 18px; transition: transform .2s; }
+  body.m .sum-group[open] > summary::after { transform: rotate(90deg); }
+  body.m .sum-group[open] > summary .peek { display: none; }
+  body.m .sum-group[open] { padding-bottom: 6px; }
+  body.m .sum-row .k small { display: none; }
+  .sum-row { padding: 9px 0; }
+  .cal { gap: 3px; }
+  .cal-cell { min-height: 58px; padding: 4px; border-radius: 8px; }
+  .cal-cell .p { font-size: 12.5px; }
+  .cal-cell .c { display: none; }
+  .cal-coin-note { display: none; }
+  .cal-nav strong { min-width: 0; font-size: 15px; }
+  body.m .log-table { display: none; }
+  body.m .log-cards { display: grid; gap: 8px; }
+  dialog { width: 100%; max-width: 100%; margin: auto 0 0; border-radius: 22px 22px 0 0; max-height: 94dvh; animation: sheetUp .22s ease-out; }
+  .dlg { max-height: 94dvh; padding: 10px 16px 0; }
+  .dlg::before { content: ''; display: block; width: 40px; height: 5px; border-radius: 3px; background: var(--line); margin: 0 auto 10px; }
+  .dlg-actions.sticky { padding-bottom: calc(14px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); margin: 4px -16px 0; padding-left: 16px; padding-right: 16px; }
+  .dlg-actions.sticky #fSave { flex: 1; padding: 14px; font-size: 17px; border-radius: 12px; }
+  .field input.huge { font-size: 30px; }
+  .flow-seg button { padding: 10px 6px; }
+}
+@media (prefers-reduced-motion: reduce) { dialog { animation: none; } }
+/* ================= 籃球貓 × 街頭球場（2026-10-20）：糖果色、多彩、全部實色、不發光 ================= */
+@font-face { font-family: 'Huninn'; src: url(fonts/huninn-diary.woff) format('woff'); font-display: swap; }
+:root {
+  --bg: #fff4e4; --card: #fffdf9; --card-2: #fff4dc; --field: #fffaf2; --ink: #261b36; --ink-2: #4d4260; --muted: #6c6280;
+  --line: #ecdcbf; --grid: #f2e8d5;
+  --up: #c8203f; --up-mark: #ef4444; --up-soft: #fde4e6;
+  --down: #047857; --down-mark: #059669; --down-soft: #d6f3e6;
+  --mine: #7c3aed; --bench: #ea580c;
+  --accent: #f97316; --accent-ink: #3b1203; --accent-deep: #9a3412; --accent-text: #c2410c;   /* 籃球橘：橘底配深咖啡字 */
+  --pick: #7c3aed; --pick-ink: #ffffff; --pick-deep: #4c1d95;                                  /* 選取中：球衣紫 */
+  --gold: #b45309; --gold-fill: #fbbf24; --gold-ink: #422006; --water: #0ea5e9;
+  --hero: #6d28d9; --hero-deep: #4c1d95; --hero-tile: #fff8e6; --topbar: #fffaf0; --frame: #f97316; --toast: #4c1d95; --toast-ink: #ffffff;
+  --c-pink: #db2777; --c-blue: #2563eb; --c-purple: #7c3aed; --c-teal: #0e7490; --c-wood: #8a5a2b; --c-orange: #c2410c; --c-sky: #0369a1; --c-fuchsia: #a21caf; --c-gold: #b45309;
+  --t-1: #ffe1ef; --t-2: #dcefff; --t-3: #fff0bf; --t-4: #f3edff;
+  --wash: linear-gradient(125deg, #ffe0ec 0%, #fff0c8 18%, #e2f7df 36%, #d8efff 54%, #e8e0ff 72%, #ffe0f0 88%, #fff0c8 100%);
+  --dots: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='132' height='132'%3E%3Cg opacity='.5'%3E%3Ccircle cx='14' cy='18' r='4' fill='%23f97316'/%3E%3Ccircle cx='84' cy='38' r='3' fill='%237c3aed'/%3E%3Crect x='42' y='90' width='8' height='8' rx='2' fill='%232563eb' transform='rotate(22 46 94)'/%3E%3Cpath d='M100 104l7-12 7 12z' fill='%23db2777'/%3E%3Ccircle cx='118' cy='12' r='2.6' fill='%23eab308'/%3E%3Cpath d='M18 72q7-7 14 0' stroke='%230ea5e9' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='66' cy='120' r='2.4' fill='%23ec4899'/%3E%3C/g%3E%3C/svg%3E");
+  --jersey: repeating-linear-gradient(90deg, #f97316 0 26px, #fbbf24 26px 52px, #7c3aed 52px 78px, #2563eb 78px 104px, #db2777 104px 130px, #0ea5e9 130px 156px);
+  --grad: var(--hero); --grad-soft: var(--card-2); --glow: transparent; --shadow: none;
+  --top-h: 64px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1424; --card: #151f33; --card-2: #1c2943; --field: #0f182a; --ink: #f4f1ea; --ink-2: #cdd5e4; --muted: #a3aec3;
+    --line: #2b3a57; --grid: #22304d;
+    --up: #ff8a8a; --up-soft: #3a1b26; --down: #34d399; --down-soft: #0f2e27;
+    --mine: #8b5cf6; --bench: #ea580c;
+    --accent: #fb923c; --accent-ink: #2a1003; --accent-deep: #9a3412; --accent-text: #fdba74;
+    --pick: #7c3aed; --pick-deep: #4c1d95;
+    --gold: #fbbf24; --water: #38bdf8;
+    --hero: #5b21b6; --hero-deep: #2e1065; --hero-tile: #1c2943; --topbar: #121b2e; --frame: #c2410c; --toast: #5b21b6;
+    --t-1: #3a1830; --t-2: #13294a; --t-3: #36290a; --t-4: #2a1f4d;
+    --wash: linear-gradient(160deg, #0d1424 0%, #121a30 55%, #1a1430 100%);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1424; --card: #151f33; --card-2: #1c2943; --field: #0f182a; --ink: #f4f1ea; --ink-2: #cdd5e4; --muted: #a3aec3;
+  --line: #2b3a57; --grid: #22304d;
+  --up: #ff8a8a; --up-soft: #3a1b26; --down: #34d399; --down-soft: #0f2e27;
+  --mine: #8b5cf6; --bench: #ea580c;
+  --accent: #fb923c; --accent-ink: #2a1003; --accent-deep: #9a3412; --accent-text: #fdba74;
+  --pick: #7c3aed; --pick-deep: #4c1d95;
+  --gold: #fbbf24; --water: #38bdf8;
+  --hero: #5b21b6; --hero-deep: #2e1065; --hero-tile: #1c2943; --topbar: #121b2e; --frame: #c2410c; --toast: #5b21b6;
+  --t-1: #3a1830; --t-2: #13294a; --t-3: #36290a; --t-4: #2a1f4d;
+  --wash: linear-gradient(160deg, #0d1424 0%, #121a30 55%, #1a1430 100%);
+}
+html { scroll-padding-top: calc(var(--top-h) + 8px); }
+body { font-family: 'Huninn', -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif; background: var(--dots), var(--wash), var(--bg); background-attachment: fixed; }
+/* 自己打的字（心得）用系統字，不會一行裡混到兩種字型 */
+.lc-note, td.note, #fNote { font-family: -apple-system, BlinkMacSystemFont, "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", sans-serif; }
+h1, h2, h3 { font-weight: 700; }
+
+/* 上方：球衣條紋＋籃球貓頭像 */
+.top { background: var(--topbar); backdrop-filter: none; border-bottom: 2px solid var(--line); }
+.top::before { content: ''; display: block; height: 6px; background: var(--jersey); }
+.top-in { padding: 8px 16px; }
+.brand { gap: 10px; }
+.brand-cat { width: 42px; height: 42px; flex: none; border: 0; padding: 3px; border-radius: 50%; cursor: pointer; background: conic-gradient(#f97316 0 25%, #7c3aed 0 50%, #fbbf24 0 75%, #2563eb 0); -webkit-tap-highlight-color: transparent; }
+.brand-cat svg { display: block; width: 100%; height: 100%; border-radius: 50%; background: #ffe7c7; }
+#brandName { font-size: 18px; color: var(--ink); letter-spacing: .02em; }
+.nav a { font-weight: 600; }
+.nav a:hover { background: color-mix(in srgb, var(--accent) 14%, var(--card)); }
+.icon-btn { width: 38px; height: 38px; border: 2px solid var(--line); border-radius: 50%; background: var(--card); box-shadow: 0 3px 0 var(--line); transition: transform .12s, box-shadow .12s; }
+.icon-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }
+.icon-btn:disabled { opacity: .45; box-shadow: none; }
+
+/* 球場明信片＋籃球貓說話 */
+.pc-wrap { max-width: 1080px; margin: 0 auto; padding: 14px 16px 0; }
+.pc-frame { position: relative; overflow: hidden; height: clamp(220px, 26vw, 300px); border: 4px solid var(--frame); border-radius: 22px; background: #fde3c0; box-shadow: 0 6px 0 var(--accent-deep); }
+.pc-frame > svg.scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.pc-frame #cat-slot, .pc-frame #sc-hoop, .pc-frame #sc-board, .pc-frame #sc-101, .pc-frame .sc-vend, .pc-frame .sc-bike, .pc-frame .sc-stand, .pc-frame .sc-bench,
+.pc-frame .sc-gate, .pc-frame .sc-sun, .pc-frame .sc-moon, .pc-frame .sc-drift { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.cat-say { position: relative; margin: 14px 2px 0; padding: 9px 14px; background: var(--card); color: var(--ink); border: 2px solid var(--ink); border-radius: 18px; box-shadow: 0 3px 0 var(--ink); font-size: 15px; line-height: 1.5; min-height: 46px; }
+.cat-say::before { content: ''; position: absolute; top: -11px; left: var(--say-x, 52%); width: 18px; height: 18px; background: var(--card); border-left: 2px solid var(--ink); border-top: 2px solid var(--ink); transform: translateX(-50%) rotate(45deg); border-radius: 4px 0 0 0; }
+.cat-say b { color: var(--accent-text); margin-right: 6px; }
+.fx-pop { position: absolute; z-index: 3; pointer-events: none; padding: 1px 10px; border-radius: 999px; font-size: 17px; font-weight: 700; color: #fff; background: var(--bg-pop, #db2777); border: 2px solid #261b36; box-shadow: 0 3px 0 #261b36; white-space: nowrap; animation: popUp 1.15s ease-out forwards; }
+@keyframes popUp { from { transform: translate(-50%, 8px) scale(.6); opacity: 0; } 15% { transform: translate(-50%, 0) scale(1.12); opacity: 1; } 70% { opacity: 1; } to { transform: translate(-50%, -46px) scale(1); opacity: 0; } }
+/* 場景裡的小動畫（SVG 本身有 transform 屬性的群組用 translate／scale 屬性，才不會蓋掉原本的位置） */
+svg.scene .sc-drift { animation: scDrift 14s ease-in-out infinite alternate; }
+@keyframes scDrift { to { translate: 30px 0; } }
+svg.scene .sc-bob { animation: scBob 3.2s ease-in-out infinite alternate; }
+@keyframes scBob { to { translate: 0 3px; } }
+svg.scene .sc-net { transform-box: fill-box; transform-origin: 50% 0; }
+svg.scene .sc-net.swish { animation: netSwish .5s ease-out; }
+@keyframes netSwish { 25% { transform: scale(.9, 1.3); } 55% { transform: scale(1.05, .9); } }
+svg.scene .sc-drift.shy .f-cheek { fill: #f43f5e; }
+#cat-slot.hop { animation: catHop .5s ease; }
+@keyframes catHop { 35% { translate: 0 -14px; } 70% { translate: 0 2px; } }
+svg.scene #sb-w, svg.scene #sb-l { transform-box: fill-box; transform-origin: 50% 50%; }
+svg.scene .flip { animation: sbFlip .55s ease; }
+@keyframes sbFlip { 40% { transform: scaleY(0); } }
+.bcat-full .bc-ball { animation: dribble .64s cubic-bezier(.45, 0, .55, 1) infinite; }
+@keyframes dribble { 0%, 100% { transform: translateY(0); } 46% { transform: translateY(26px); } 50% { transform: translateY(28px) scale(1.12, .86); } 54% { transform: translateY(26px); } }
+.bcat.shooting .bc-ball { animation: none; opacity: 0; }
+.bcat .bc-tail { animation: bcTail 2.4s ease-in-out infinite alternate; }
+@keyframes bcTail { from { transform: rotate(-9deg); } to { transform: rotate(10deg); } }
+
+/* 卡片：每區一色，上緣色條＋實色陰影 */
+.card { --hue: var(--c-pink); background: var(--card); border: 2px solid color-mix(in srgb, var(--hue) 30%, var(--line)); border-top: 8px solid var(--hue); border-radius: 22px; box-shadow: 0 5px 0 color-mix(in srgb, var(--hue) 28%, transparent); }
+#sec-summary { --hue: var(--c-pink); } #sec-curve { --hue: var(--c-blue); } #sec-perf { --hue: var(--c-purple); }
+[data-chart="daily"] { --hue: var(--c-orange); } [data-chart="win"] { --hue: var(--c-teal); } [data-chart="dd"] { --hue: var(--c-sky); }
+#sec-calendar { --hue: var(--c-fuchsia); } #sec-cost { --hue: var(--c-gold); } #sec-log { --hue: var(--c-wood); } .onboard { --hue: var(--c-orange); }
+.eyebrow { display: table; margin: 0 0 8px; padding: 3px 12px; border-radius: 999px; background: var(--hue, var(--c-pink)); color: #fff; font-size: 12.5px; font-weight: 700; letter-spacing: .06em; text-transform: none; box-shadow: 0 3px 0 color-mix(in srgb, var(--hue, var(--c-pink)) 62%, #000); }
+.card h2 { display: inline; -webkit-box-decoration-break: clone; box-decoration-break: clone; padding: 0 4px; border-radius: 6px; background: linear-gradient(transparent 56%, color-mix(in srgb, var(--hue) 26%, var(--card)) 56%, color-mix(in srgb, var(--hue) 26%, var(--card)) 94%, transparent 94%); }
+.card-head p.sub { margin-top: 6px; }
+
+/* 主視覺：紫色球衣（金色 V 領、兩側金邊），四格糖果色，點了籃球貓會解釋 */
+#sec-hero { --hue: var(--hero); position: relative; margin-top: 18px; overflow: visible; background: var(--hero); color: #fff; border: 3px solid var(--hero-deep); padding-top: 34px; padding-left: 24px; padding-right: 24px;
+  box-shadow: inset 9px 0 0 var(--gold-fill), inset -9px 0 0 var(--gold-fill), 0 6px 0 var(--hero-deep); }
+#sec-hero::before, #sec-hero::after { content: ''; position: absolute; top: -3px; left: 50%; transform: translateX(-50%); pointer-events: none; clip-path: polygon(0 0, 100% 0, 50% 100%); }
+#sec-hero::before { width: 84px; height: 30px; background: var(--gold-fill); }
+#sec-hero::after { width: 54px; height: 18px; background: #fff; }
+#sec-hero .eyebrow { background: #fff; color: var(--hero-deep); box-shadow: 0 3px 0 var(--hero-deep); }
+#sec-hero .hero-eq small { color: #ede9fe; }
+#heroNum { cursor: pointer; }
+#sec-hero .hero-today { display: inline-flex; align-items: baseline; gap: 4px; flex-wrap: wrap; background: var(--hero-tile); padding: 5px 14px; border-radius: 999px; font-size: 15px; border: 2px solid var(--hero-deep); }
+#sec-hero .hero-today .muted { color: var(--muted); }
+#sec-hero .btn.primary { background: var(--accent); color: var(--accent-ink); border: 3px solid #fff; box-shadow: 0 4px 0 var(--accent-deep); }
+#sec-hero .btn.primary:active { box-shadow: 0 1px 0 var(--accent-deep); }
+#sec-hero .reminder { background: #fff; color: var(--hero-deep); }
+#sec-hero .reminder.done { background: #d1fae5; color: #065f46; }
+#sec-hero .streak { display: inline-flex; align-items: center; gap: 4px; padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; border: 2px solid #fff; }
+#sec-hero .streak.hot { background: #fde68a; color: #7c2d12; }
+#sec-hero .streak.cold { background: #dbeafe; color: #1e3a8a; }
+#sec-hero .tile { color: var(--ink); border: 2px solid var(--hero-deep); border-top-width: 6px; border-radius: 16px; transition: transform .12s; }
+button.tile { font: inherit; text-align: left; width: 100%; display: block; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+#sec-hero .tile:nth-child(1) { background: var(--t-1); border-top-color: #db2777; }
+#sec-hero .tile:nth-child(2) { background: var(--t-2); border-top-color: #2563eb; }
+#sec-hero .tile:nth-child(3) { background: var(--t-3); border-top-color: #eab308; }
+#sec-hero .tile:nth-child(4) { background: var(--t-4); border-top-color: #7c3aed; }
+#sec-hero .tile:active { transform: scale(.97); }
+#sec-hero .tile.pop { animation: tilePop .4s ease; }
+@keyframes tilePop { 40% { transform: scale(1.05) rotate(-1deg); } }
+#sec-hero .tile span { color: var(--ink-2); }
+#sec-hero .tile em { color: var(--muted); }
+.tile span { font-weight: 600; }
+
+/* 按鈕：糖果膠囊（下緣實色立體邊） */
+.btn { border: 2px solid var(--line); border-radius: 999px; font-weight: 700; box-shadow: 0 3px 0 var(--line); transition: transform .12s, box-shadow .12s; }
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }
+.btn.primary { background: var(--accent); border-color: var(--accent-deep); color: var(--accent-ink); box-shadow: 0 4px 0 var(--accent-deep); }
+.btn.primary:hover { filter: none; border-color: var(--accent-deep); }
+.btn.primary:active { box-shadow: 0 1px 0 var(--accent-deep); }
+.btn.danger { color: var(--up); border-color: color-mix(in srgb, var(--up) 40%, var(--line)); }
+
+/* 總表、提示、說明 */
+.sum-group[data-grp="0"] { --g: var(--c-orange); } .sum-group[data-grp="1"] { --g: var(--c-pink); } .sum-group[data-grp="2"] { --g: var(--c-blue); }
+.sum-group { background: color-mix(in srgb, var(--g) 7%, var(--card)); border: 2px solid color-mix(in srgb, var(--g) 28%, var(--line)); border-radius: 16px; padding: 8px 12px; }
+body.m .sum-group { background: color-mix(in srgb, var(--g) 8%, var(--card)); padding: 0 12px; }
+.sum-group h3 { color: var(--ink) !important; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.sum-group h3::before { content: ''; width: 14px; height: 14px; border-radius: 50%; background: var(--g); flex: none; box-shadow: inset 0 0 0 2px var(--card); outline: 2px solid var(--g); }
+.sum-row { border-bottom-color: color-mix(in srgb, var(--g, var(--c-pink)) 22%, var(--line)); }
+.tips li { background: var(--card-2); border: 2px solid var(--line); border-radius: 14px; }
+.wr-box { background: var(--card-2); border: 2px solid var(--line); border-radius: 16px; }
+.q { position: relative; background: color-mix(in srgb, var(--accent) 10%, var(--card)); color: var(--accent-text); font-weight: 700; }
+.q::after { content: ''; position: absolute; inset: -12px; }   /* 點的範圍放大，圓點本身維持小小的 */
+.explain { background: var(--card-2); border: 2px dashed var(--line); }
+.reminder { font-weight: 700; }
+
+/* 切換：圖表晶片（每張圖自己的顏色）、單位、日期 */
+.chips button, .date-chips button { border: 2px solid var(--line); background: var(--card); color: var(--ink-2); font-weight: 600; box-shadow: 0 2px 0 var(--line); }
+.chips [data-chart-btn="equity"] { --hue: var(--c-blue); } .chips [data-chart-btn="cum"] { --hue: var(--c-purple); } .chips [data-chart-btn="daily"] { --hue: var(--c-orange); }
+.chips [data-chart-btn="win"] { --hue: var(--c-teal); } .chips [data-chart-btn="dd"] { --hue: var(--c-sky); } .chips [data-chart-btn="cost"] { --hue: var(--c-gold); }
+.chips button[aria-selected="true"] { background: var(--hue); border-color: var(--hue); color: #fff; font-weight: 700; box-shadow: 0 3px 0 color-mix(in srgb, var(--hue) 55%, #000); }
+.seg button[aria-pressed="true"], .date-chips button[aria-pressed="true"] { background: var(--pick); border-color: var(--pick); color: var(--pick-ink); font-weight: 700; box-shadow: 0 3px 0 var(--pick-deep); }
+.seg { background: var(--card-2); border: 2px solid var(--line); border-radius: 999px; }
+.seg button { border-radius: 999px; }
+.seg button[aria-pressed="true"] { box-shadow: none; }
+.flow-seg button { border: 2px solid var(--line); background: var(--field); border-radius: 14px; color: var(--ink); }
+.flow-seg button[aria-pressed="true"] { border-color: var(--pick); background: color-mix(in srgb, var(--pick) 14%, var(--field)); }
+body.m .chips { top: var(--top-h); background: var(--topbar); backdrop-filter: none; border-bottom: 2px solid var(--line); }
+.preview { background: var(--card-2); border: 2px solid var(--line); border-radius: 16px; }
+
+/* 圖表提示框、日曆、紀錄 */
+.tip { border: 2px solid var(--line); box-shadow: 0 3px 0 var(--line); border-radius: 12px; }
+.cal-cell { border-radius: 12px; }
+.cal-cell:not(.week) .p, .cal-cell:not(.week) .r, .cal-cell:not(.week) .c { color: var(--ink); }   /* 底色已經是紅／綠深淺，字一律用墨色才看得清楚 */
+.cal-cell .cell-btn:focus-visible { outline-color: var(--ink); }
+.cal-cell.today { box-shadow: inset 0 0 0 3px var(--accent); }
+.cal-cell.week { border: 2px dashed color-mix(in srgb, var(--c-fuchsia) 45%, var(--line)); }
+.cal-cell:has(.cell-btn):active { transform: scale(.97); }
+.log-card { border: 2px solid var(--line); border-left: 6px solid var(--muted); border-radius: 14px; background: var(--card); }
+.log-card.lc-up { border-left-color: var(--up-mark); }
+.log-card.lc-down { border-left-color: var(--down-mark); }
+.lc-month b { font-weight: 700; }
+.lc-tag { background: var(--card-2); border: 1px solid var(--line); }
+
+/* 第一次使用 */
+.onboard { padding: 26px 18px; }
+.onboard h2 { display: inline; font-size: 22px; }
+.steps div { background: var(--card-2); border: 2px solid var(--line); border-radius: 16px; }
+.steps div:nth-child(1) { border-top: 5px solid var(--c-orange); } .steps div:nth-child(2) { border-top: 5px solid var(--c-purple); } .steps div:nth-child(3) { border-top: 5px solid var(--c-blue); }
+.steps b { color: var(--accent-text); }
+.onboard h2 + p { margin-top: 10px; }
+
+/* 對話框（手機＝底部滑出）、輸入框 */
+dialog { background: var(--card); border: 2px solid var(--line); box-shadow: none; }
+dialog::backdrop { background: rgba(38, 27, 54, .5); }
+.dlg::before { background: var(--jersey) !important; height: 6px !important; }
+.dlg h2 { color: var(--ink); }
+.field input, .field textarea, .date-row input[type=date] { border: 2px solid var(--line); background: var(--field); border-radius: 14px; }
+.field input:focus, .field textarea:focus { outline: 3px solid color-mix(in srgb, var(--pick) 55%, transparent); outline-offset: 0; border-color: var(--pick); }
+.dlg-actions.sticky { border-top: 2px solid var(--line); }
+.toast { background: var(--toast); color: var(--toast-ink); border: 2px solid #fff; border-radius: 999px; box-shadow: 0 4px 0 rgba(38, 27, 54, .35); }
+
+/* 輸入提示字、鍵盤焦點、圖表零線、漏水筒警示 */
+::placeholder { color: var(--muted); opacity: 1; }
+#sec-hero :focus-visible, .install :focus-visible { outline-color: #fff; }
+.chart .zerol { opacity: 1; }
+.leak-tiles b.cost-warn { color: var(--gold); }
+.brand-cat.bounce svg { animation: catBounce .45s ease; }
+@keyframes catBounce { 40% { transform: translateY(-4px) rotate(-8deg); } 70% { transform: translateY(1px) rotate(4deg); } }
+
+/* 同步標籤、安裝提示、同步碼 */
+.sync-badge { border-width: 2px; }
+.sync-badge.syncing { color: var(--accent-text); }
+.sync-badge.view { background: var(--hero); color: #fff; }
+.code-box { background: var(--card-2); border: 2px dashed var(--line); }
+.install { background: var(--hero); color: #fff; border: 3px solid var(--hero-deep); box-shadow: inset 7px 0 0 var(--gold-fill), 0 5px 0 var(--hero-deep); border-radius: 20px; }
+.install .btn { background: var(--gold-fill); color: var(--gold-ink); border: 2px solid #fff; box-shadow: 0 3px 0 #b45309; }
+.install .x { background: #fff; color: var(--hero-deep); }
+
+/* 底部分頁：每個分頁自己的顏色，中間是一顆籃球 */
+body.m .tabbar { background: var(--topbar); backdrop-filter: none; border-top: 2px solid var(--line); }
+.tabbar button { font-weight: 600; color: var(--muted); }
+.tabbar [data-tab-btn="home"] { --tc: #f97316; } .tabbar [data-tab-btn="charts"] { --tc: #2563eb; } .tabbar [data-tab-btn="cal"] { --tc: #db2777; } .tabbar [data-tab-btn="log"] { --tc: #7c3aed; }
+.tabbar .ic { filter: grayscale(.55); opacity: .85; transition: transform .2s; border-radius: 12px; padding: 0 9px; }
+.tabbar button[aria-current="page"] { color: var(--ink); font-weight: 700; }
+.tabbar button[aria-current="page"] .ic { filter: none; opacity: 1; transform: translateY(-2px) scale(1.08); background: color-mix(in srgb, var(--tc) 22%, var(--topbar)); box-shadow: inset 0 -3px 0 var(--tc); }
+.tabbar .add { color: var(--accent-text); }
+.tabbar .add .ic { position: relative; padding: 0; background: #f97316 !important; color: #fff !important; border: 4px solid var(--topbar) !important; box-shadow: 0 4px 0 #9a3412 !important; filter: none; opacity: 1; animation: none !important; overflow: visible; }
+.tabbar .add .ic svg { width: 100%; height: 100%; display: block; }
+.tabbar .add .ic i { position: absolute; right: -8px; top: -8px; width: 24px; height: 24px; border-radius: 50%; background: #7c3aed; color: #fff; font-style: normal; font-size: 17px; line-height: 1; font-weight: 700; display: grid; place-items: center; border: 2px solid var(--topbar); }
+.tabbar .add:active .ic svg { animation: ballSpin .45s ease; }
+@keyframes ballSpin { to { transform: rotate(360deg); } }
+
+/* 賺錢日：籃球、星星、「空心！」從天而降 */
+.confetti { position: fixed; top: 0; z-index: 60; pointer-events: none; font-size: 22px; font-weight: 700; line-height: 1; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+body.intro #app > * { animation: rise .5s cubic-bezier(.2, .8, .2, 1) both; }
+body.intro #app > *:nth-child(2) { animation-delay: .05s; } body.intro #app > *:nth-child(3) { animation-delay: .1s; }
+body.intro #app > *:nth-child(4) { animation-delay: .15s; } body.intro #app > *:nth-child(5) { animation-delay: .2s; }
+body.intro #app > *:nth-child(n+6) { animation-delay: .25s; }
+
+/* 手機 */
+@media (max-width: 760px) {
+  .pc-wrap { padding: 12px 16px 0; }
+  .pc-frame { height: auto; aspect-ratio: 16 / 9; border-radius: 20px; }
+  /* 粉圓的數字比較寬：週合計欄放寬、字距收一點，五位數也放得下 */
+  .cal { grid-template-columns: repeat(5, minmax(0,1fr)) minmax(0,1.12fr); }
+  .cal-cell .p { letter-spacing: -.03em; }
+  .cal-cell.week { padding: 4px 3px; }
+  .cal-cell.week .p { font-size: 12px; }
+  /* 手機上好點：按鈕至少 40px */
+  :root { --top-h: 68px; }
+  .icon-btn { width: 44px; height: 44px; }
+  .btn.small { min-height: 40px; }
+  .seg button { min-height: 40px; }
+  .install .x { width: 40px; height: 40px; }
+  details.more > summary, .card details:not(.sum-group) > summary { padding: 10px 0; }
+  .cat-say { font-size: 14.5px; }
+  #sec-hero { padding-left: 20px; padding-right: 20px; }
+  #brandName { font-size: 17px; }
+}
+@media (max-width: 380px) {
+  .onboard h2 { font-size: 19px; }
+  /* 本金 10 萬，每天常常是四位數（−1,469）：小手機上日曆的字再縮一點才放得下 */
+  .cal-cell { padding-left: 3px; padding-right: 3px; }
+  .cal-cell .p { font-size: 11.5px; letter-spacing: -.04em; }
+}
+/* 不是總覽分頁時收起明信片 */
+body.m:not([data-tab="home"]) .pc-wrap { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  body.intro #app > * { animation: none; }
+  svg.scene .sc-drift, svg.scene .sc-bob, svg.scene .sc-net.swish, #cat-slot.hop, svg.scene .flip, .bcat-full .bc-ball, .bcat .bc-tail, .fx-pop, .brand-cat.bounce svg, #sec-hero .tile.pop, .tabbar .add:active .ic svg { animation: none !important; }
+  .fx-pop { display: none; }
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand"><button type="button" class="brand-cat" id="brandCat" aria-label="籃球貓：點我投一球"><svg class="bcat bcat-head" viewBox="0 0 100 100" data-mood="calm" aria-hidden="true"><style>
+.bcat{stroke-linejoin:round;stroke-linecap:round}
+.bcat-full{stroke-width:2.4}
+.bcat-head{stroke-width:3.6}
+.bcat .bc-m-up,.bcat .bc-m-calm,.bcat .bc-m-down,.bcat .bc-spark,.bcat .bc-sweat{display:none}
+.bcat[data-mood="up"] .bc-m-up, .bcat[data-mood="up"] .bc-spark, .bcat[data-mood="calm"] .bc-m-calm, .bcat:not([data-mood]) .bc-m-calm, .bcat[data-mood="down"] .bc-m-down, .bcat[data-mood="down"] .bc-sweat{display:inline}
+</style>
+<path d="M19,92 C19,78 31,71 50,71 C69,71 81,78 81,92 Q81,94 79,94 H21 Q19,94 19,92Z" fill="#7c3aed" stroke="#2b2140"/>
+<path d="M40,74 L50,89 L60,74Z" fill="#fff"/>
+<path d="M40,74 L50,89 L60,74" fill="none" stroke="#fbbf24" stroke-width="4"/>
+<g stroke="#2b2140">
+<path d="M17,36 Q12,10 20,7 Q25,5 41,17Z" fill="#9db4cc"/>
+<path d="M83,36 Q88,10 80,7 Q75,5 59,17Z" fill="#9db4cc"/>
+</g>
+<path d="M22,29 Q20,15 23,13 Q26,12 35,19Z M78,29 Q80,15 77,13 Q74,12 65,19Z" fill="#f7a8b8"/>
+<path d="M50,16 C72,16 86,28 87.5,46 C89,68 72,80 50,80 C28,80 11,68 12.5,46 C14,28 28,16 50,16Z" fill="#9db4cc" stroke="#2b2140"/>
+<path d="M44.5,18.5 L45.5,24 M50,18 V24 M55.5,18.5 L54.5,24 M13.5,55 H19 M86.5,55 H81" fill="none" stroke="#6e86a3" stroke-width="3.2"/>
+<path d="M12.5,38 Q50,14 87.5,38 L87.8,46.5 Q50,22.5 12.2,46.5Z" fill="#fff" stroke="#2b2140" stroke-width="3"/>
+<path d="M12.4,42.3 Q50,18.3 87.6,42.3" fill="none" stroke="#f97316" stroke-width="2.8"/>
+<ellipse cx="50" cy="65" rx="15.5" ry="10.5" fill="#fff"/>
+<ellipse cx="22.5" cy="64" rx="6.5" ry="4.2" fill="#ffb3d1"/>
+<ellipse cx="77.5" cy="64" rx="6.5" ry="4.2" fill="#ffb3d1"/>
+<circle cx="35" cy="50.5" r="8.5" fill="#2b2140"/>
+<circle cx="65" cy="50.5" r="8.5" fill="#2b2140"/>
+<circle cx="32" cy="47.3" r="3.1" fill="#fff"/><circle cx="62" cy="47.3" r="3.1" fill="#fff"/>
+<circle cx="38" cy="54" r="1.5" fill="#fff"/><circle cx="68" cy="54" r="1.5" fill="#fff"/>
+<path d="M46.8,57 Q50,55.3 53.2,57 Q51.6,60.6 50,60.6 Q48.4,60.6 46.8,57Z" fill="#f48fb1" stroke="#2b2140" stroke-width="1.8"/>
+<g class="bc-m-calm" fill="none" stroke="#2b2140" stroke-width="2.6">
+<path d="M50,60.6 V62 M43.5,61.5 Q46.8,67 50,62 Q53.2,67 56.5,61.5"/>
+</g>
+<g class="bc-m-up" stroke="#2b2140" stroke-width="2.4">
+<path d="M43,61.5 Q50,63.5 57,61.5 Q56.5,73 50,73 Q43.5,73 43,61.5Z" fill="#7b2d43"/>
+<path d="M46,69.5 Q50,65.8 54,69.5 Q52.5,72.3 50,72.3 Q47.5,72.3 46,69.5Z" fill="#f48fb1" stroke="none"/>
+</g>
+<g class="bc-m-down" fill="none" stroke="#2b2140" stroke-width="2.8">
+<path d="M50,60.6 V65 M43.5,65.5 H56.5"/>
+</g>
+<g class="bc-spark" fill="#fbbf24" stroke="#2b2140" stroke-width="2">
+<path d="M91,73 L93.2,79 L99.5,79.3 L94.6,83.3 L96.3,89.4 L91,85.9 L85.7,89.4 L87.4,83.3 L82.5,79.3 L88.8,79Z"/>
+<path d="M9,74 L10.6,78.3 L15.2,78.5 L11.6,81.4 L12.8,85.8 L9,83.3 L5.2,85.8 L6.4,81.4 L2.8,78.5 L7.4,78.3Z"/>
+</g>
+<path class="bc-sweat" d="M92,15 Q97.5,23.5 97.5,27 A5.5,5.5 0 0,1 86.5,27 Q86.5,23.5 92,15Z" fill="#60a5fa" stroke="#2b2140" stroke-width="2"/></svg></button><span id="brandName">宋睿洋的做單日記</span></div>
+    <nav class="nav" aria-label="區塊">
+      <a href="#sec-summary">總表</a><a href="#sec-curve">權益曲線</a><a href="#sec-perf">績效與風險</a>
+      <a href="#sec-calendar">報酬日曆</a><a href="#sec-cost">漏水筒</a><a href="#sec-log">紀錄</a>
+    </nav>
+    <span class="sync-badge hidden" id="syncBadge" role="status"></span>
+    <button class="icon-btn" id="themeBtn" title="切換深淺色" aria-label="切換深淺色">🌓</button>
+    <button class="icon-btn" id="setBtn" title="設定與備份" aria-label="設定與備份">⚙️</button>
+  </div>
+</header>
+
+<div class="pc-wrap" id="postcard">
+  <div class="pc-frame" id="pcFrame"><svg class="scene" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMax slice" role="img" aria-label="巷口街頭籃球場：粉彩公寓、遠方的台北 101、籃框、記分板、睿洋籃球場招牌，和正在運球的籃球貓"><style>svg.scene{--sc-sky:#fde3c0;--sc-sun:#f9a03f;--sc-sun-2:#fcc96b;--sc-cloud:#ffffff;--sc-cheek:#ffb3d1;--sc-city:#d3c9ec;--sc-city-2:#bdb3e2;--sc-t101:#8ec5cf;--sc-t101-d:#5f9fb0;--sc-peach:#ffd2a8;--sc-butter:#fbe3a1;--sc-mint:#c9e4c5;--sc-blue:#bcd7ef;--sc-lilac:#e8c4e8;--sc-pink:#f6c6c6;--sc-trim:#fffaf0;--sc-window:#bfe3f5;--sc-tank:#e3eaf3;--sc-leaf:#6fae4f;--sc-leaf-2:#a8cc5c;--sc-trunk:#8a5a2b;--sc-flower:#ec4899;--sc-pot:#e0794a;--sc-post:#5d6680;--sc-court:#4f8ee0;--sc-court-2:#3567b8;--sc-key:#f97316;--sc-iron:#3a3048;--sc-lamp:#fff8e6;--sc-board:#172554;--sc-cell:#0b1233;--sc-digit:#fbbf24;--sc-label:#fff1c8;--sc-purple:#7c3aed;--sc-gold:#fbbf24;--sc-ink:#422006;--sc-bb:#ffffff;--sc-rim:#f97316;--sc-navy:#1e3a8a;--sc-ball:#f97316;--sc-vend:#2563eb;--sc-vlit:#e6f4ff;--sc-cream:#fff1c8;--sc-wood:#d08f4f;--sc-bike:#ec4899;--sc-outline:#2b2140;--sc-moon:#fff3c4;--sc-star:#fff3c4;--sc-light:#ffd166;--sc-line:#ffffff;--sc-fence:#8e98ad;--sc-bar:#6f7f9e;--sc-net:#ffffff;--sc-seam:#7c2d12}:root[data-theme="dark"] svg.scene,svg.scene.night{--sc-sky:#14213d;--sc-sun:#f9a03f;--sc-sun-2:#fcc96b;--sc-cloud:#dfe6f0;--sc-cheek:#ffb3d1;--sc-city:#22305a;--sc-city-2:#1b284d;--sc-t101:#3d6584;--sc-t101-d:#2a4a66;--sc-peach:#9a7a62;--sc-butter:#9a8a5e;--sc-mint:#6f8a72;--sc-blue:#5f7896;--sc-lilac:#7f6a8c;--sc-pink:#8f6f7f;--sc-trim:#c9cbd6;--sc-window:#ffd166;--sc-tank:#8d96aa;--sc-leaf:#2f6b3a;--sc-leaf-2:#3f7a45;--sc-trunk:#55341a;--sc-flower:#d9468f;--sc-pot:#9a5034;--sc-post:#2c3346;--sc-court:#2b4c8a;--sc-court-2:#213a6b;--sc-key:#c2560f;--sc-iron:#1b1626;--sc-lamp:#ffd166;--sc-board:#0f1a3d;--sc-cell:#070c22;--sc-digit:#fbbf24;--sc-label:#fff1c8;--sc-purple:#6d28d9;--sc-gold:#f2b01e;--sc-ink:#422006;--sc-bb:#e8ecf4;--sc-rim:#ea6a12;--sc-navy:#172554;--sc-ball:#f97316;--sc-vend:#1e40af;--sc-vlit:#ffd166;--sc-cream:#f3e2b5;--sc-wood:#7a4e25;--sc-bike:#d9468f;--sc-outline:#0e0a1a;--sc-moon:#fff3c4;--sc-star:#fff3c4;--sc-light:#ffd166;--sc-line:#dfe6f0;--sc-fence:#56607a;--sc-bar:#3a3048;--sc-net:#dfe6f0;--sc-seam:#7c2d12}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) svg.scene{--sc-sky:#14213d;--sc-sun:#f9a03f;--sc-sun-2:#fcc96b;--sc-cloud:#dfe6f0;--sc-cheek:#ffb3d1;--sc-city:#22305a;--sc-city-2:#1b284d;--sc-t101:#3d6584;--sc-t101-d:#2a4a66;--sc-peach:#9a7a62;--sc-butter:#9a8a5e;--sc-mint:#6f8a72;--sc-blue:#5f7896;--sc-lilac:#7f6a8c;--sc-pink:#8f6f7f;--sc-trim:#c9cbd6;--sc-window:#ffd166;--sc-tank:#8d96aa;--sc-leaf:#2f6b3a;--sc-leaf-2:#3f7a45;--sc-trunk:#55341a;--sc-flower:#d9468f;--sc-pot:#9a5034;--sc-post:#2c3346;--sc-court:#2b4c8a;--sc-court-2:#213a6b;--sc-key:#c2560f;--sc-iron:#1b1626;--sc-lamp:#ffd166;--sc-board:#0f1a3d;--sc-cell:#070c22;--sc-digit:#fbbf24;--sc-label:#fff1c8;--sc-purple:#6d28d9;--sc-gold:#f2b01e;--sc-ink:#422006;--sc-bb:#e8ecf4;--sc-rim:#ea6a12;--sc-navy:#172554;--sc-ball:#f97316;--sc-vend:#1e40af;--sc-vlit:#ffd166;--sc-cream:#f3e2b5;--sc-wood:#7a4e25;--sc-bike:#d9468f;--sc-outline:#0e0a1a;--sc-moon:#fff3c4;--sc-star:#fff3c4;--sc-light:#ffd166;--sc-line:#dfe6f0;--sc-fence:#56607a;--sc-bar:#3a3048;--sc-net:#dfe6f0;--sc-seam:#7c2d12}}svg.scene .f-sky{fill:var(--sc-sky)}svg.scene .f-sun{fill:var(--sc-sun)}svg.scene .f-sun-2{fill:var(--sc-sun-2)}svg.scene .f-cloud{fill:var(--sc-cloud)}svg.scene .f-cheek{fill:var(--sc-cheek)}svg.scene .f-city{fill:var(--sc-city)}svg.scene .f-city-2{fill:var(--sc-city-2)}svg.scene .f-t101{fill:var(--sc-t101)}svg.scene .f-t101-d{fill:var(--sc-t101-d)}svg.scene .f-peach{fill:var(--sc-peach)}svg.scene .f-butter{fill:var(--sc-butter)}svg.scene .f-mint{fill:var(--sc-mint)}svg.scene .f-blue{fill:var(--sc-blue)}svg.scene .f-lilac{fill:var(--sc-lilac)}svg.scene .f-pink{fill:var(--sc-pink)}svg.scene .f-trim{fill:var(--sc-trim)}svg.scene .f-window{fill:var(--sc-window)}svg.scene .f-tank{fill:var(--sc-tank)}svg.scene .f-leaf{fill:var(--sc-leaf)}svg.scene .f-leaf-2{fill:var(--sc-leaf-2)}svg.scene .f-trunk{fill:var(--sc-trunk)}svg.scene .f-flower{fill:var(--sc-flower)}svg.scene .f-pot{fill:var(--sc-pot)}svg.scene .f-post{fill:var(--sc-post)}svg.scene .f-court{fill:var(--sc-court)}svg.scene .f-court-2{fill:var(--sc-court-2)}svg.scene .f-key{fill:var(--sc-key)}svg.scene .f-iron{fill:var(--sc-iron)}svg.scene .f-lamp{fill:var(--sc-lamp)}svg.scene .f-board{fill:var(--sc-board)}svg.scene .f-cell{fill:var(--sc-cell)}svg.scene .f-digit{fill:var(--sc-digit)}svg.scene .f-label{fill:var(--sc-label)}svg.scene .f-purple{fill:var(--sc-purple)}svg.scene .f-gold{fill:var(--sc-gold)}svg.scene .f-ink{fill:var(--sc-ink)}svg.scene .f-bb{fill:var(--sc-bb)}svg.scene .f-rim{fill:var(--sc-rim)}svg.scene .f-navy{fill:var(--sc-navy)}svg.scene .f-ball{fill:var(--sc-ball)}svg.scene .f-vend{fill:var(--sc-vend)}svg.scene .f-vlit{fill:var(--sc-vlit)}svg.scene .f-cream{fill:var(--sc-cream)}svg.scene .f-wood{fill:var(--sc-wood)}svg.scene .f-bike{fill:var(--sc-bike)}svg.scene .f-outline{fill:var(--sc-outline)}svg.scene .f-moon{fill:var(--sc-moon)}svg.scene .f-star{fill:var(--sc-star)}svg.scene .f-light{fill:var(--sc-light)}svg.scene .ol{stroke:var(--sc-outline);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}svg.scene .ol2{stroke:var(--sc-outline);stroke-width:2;stroke-linejoin:round;stroke-linecap:round}svg.scene .ln{fill:none;stroke-linecap:round;stroke-linejoin:round}svg.scene .s-line{stroke:var(--sc-line)}svg.scene .s-fence{stroke:var(--sc-fence)}svg.scene .s-bar{stroke:var(--sc-bar)}svg.scene .s-net{stroke:var(--sc-net)}svg.scene .s-seam{stroke:var(--sc-seam)}svg.scene .s-outline{stroke:var(--sc-outline)}svg.scene .s-iron{stroke:var(--sc-iron)}svg.scene .s-rim{stroke:var(--sc-rim)}svg.scene .s-bike{stroke:var(--sc-bike)}svg.scene .s-post{stroke:var(--sc-post)}svg.scene .s-t101-d{stroke:var(--sc-t101-d)}svg.scene .s-city-2{stroke:var(--sc-city-2)}svg.scene text{font-family:Huninn,"PingFang TC","Microsoft JhengHei",sans-serif;font-weight:700}svg.scene .sc-net{transform-box:fill-box;transform-origin:50% 0}svg.scene .sc-night{display:none}:root[data-theme="dark"] svg.scene .sc-day,svg.scene.night .sc-day{display:none}:root[data-theme="dark"] svg.scene .sc-night,svg.scene.night .sc-night{display:inline}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) svg.scene .sc-day{display:none}:root:not([data-theme="light"]) svg.scene .sc-night{display:inline}}svg.scene .sc-sun circle{stroke:#ea580c;stroke-width:5}</style><rect class="f-sky" width="1200" height="420"/><g class="sc-night f-star"><circle cx="60" cy="40" r="4"/><circle cx="150" cy="95" r="3"/><circle cx="250" cy="30" r="3"/><circle cx="330" cy="80" r="4"/><circle cx="400" cy="22" r="3"/><circle cx="520" cy="60" r="3"/><circle cx="600" cy="26" r="4"/><circle cx="760" cy="40" r="3"/><circle cx="820" cy="92" r="3"/><circle cx="900" cy="30" r="4"/><circle cx="980" cy="70" r="3"/><circle cx="1060" cy="36" r="3"/><circle cx="1130" cy="96" r="4"/><circle cx="1180" cy="50" r="3"/><circle cx="290" cy="130" r="3"/><circle cx="560" cy="150" r="4"/><circle cx="1010" cy="130" r="3"/><circle cx="110" cy="150" r="3"/><circle cx="700" cy="70" r="4"/><circle cx="450" cy="50" r="3"/></g><g class="sc-night sc-moon"><circle class="f-moon" cx="690" cy="118" r="28"/><circle class="f-sky" cx="703" cy="107" r="24"/></g><g class="sc-day sc-sun"><circle class="f-sun" cx="690" cy="120" r="36"/></g><g class="sc-drift sc-day" transform="translate(546 98)"><path class="f-cloud ol" d="M14 52 C-4 52 -4 28 14 28 C14 10 40 4 50 18 C58 2 88 4 90 24 C108 22 114 50 96 52 Z"/><circle class="f-outline" cx="40" cy="36" r="3.5"/><circle class="f-outline" cx="66" cy="36" r="3.5"/><path class="ln ol2" d="M48 42 Q53 47 58 42"/><ellipse class="f-cheek" cx="31" cy="44" rx="6" ry="3.5"/><ellipse class="f-cheek" cx="75" cy="44" rx="6" ry="3.5"/></g><g class="sc-drift sc-day" transform="translate(70 104) scale(.7)"><path class="f-cloud ol" d="M14 52 C-4 52 -4 28 14 28 C14 10 40 4 50 18 C58 2 88 4 90 24 C108 22 114 50 96 52 Z"/></g><path class="f-city" d="M0 196H46V330H0ZM46 172H86V330H46ZM86 204H142V330H86ZM142 184H176V330H142ZM176 214H228V330H176ZM226 192H270V330H226ZM270 206H310V330H270ZM310 178H356V330H310ZM356 212H396V330H356ZM396 226H426V330H396ZM486 222H520V330H486ZM520 198H564V330H520ZM564 214H594V330H564ZM594 190H646V330H594ZM646 208H682V330H646ZM682 186H730V330H682ZM730 204H770V330H730ZM770 182H826V330H770ZM826 200H862V330H826ZM862 176H912V330H862ZM912 210H952V330H912ZM952 188H1008V330H952ZM1008 170H1048V330H1008ZM1048 206H1100V330H1048ZM1100 186H1140V330H1100ZM1140 200H1200V330H1140Z"/><path class="f-city-2" d="M32 206h6v6h-6ZM8 220h6v6h-6ZM32 220h6v6h-6ZM8 234h6v6h-6ZM54 182h6v6h-6ZM72 182h6v6h-6ZM54 196h6v6h-6ZM72 210h6v6h-6ZM94 214h6v6h-6ZM128 228h6v6h-6ZM94 242h6v6h-6ZM128 242h6v6h-6ZM162 194h6v6h-6ZM150 208h6v6h-6ZM162 208h6v6h-6ZM150 222h6v6h-6ZM184 224h6v6h-6ZM214 224h6v6h-6ZM184 238h6v6h-6ZM214 252h6v6h-6ZM234 202h6v6h-6ZM256 216h6v6h-6ZM234 230h6v6h-6ZM256 230h6v6h-6ZM296 216h6v6h-6ZM278 230h6v6h-6ZM296 230h6v6h-6ZM278 244h6v6h-6ZM318 188h6v6h-6ZM342 188h6v6h-6ZM318 202h6v6h-6ZM342 216h6v6h-6ZM364 222h6v6h-6ZM382 236h6v6h-6ZM364 250h6v6h-6ZM382 250h6v6h-6ZM412 236h6v6h-6ZM404 250h6v6h-6ZM412 250h6v6h-6ZM404 264h6v6h-6ZM494 232h6v6h-6ZM506 232h6v6h-6ZM494 246h6v6h-6ZM506 260h6v6h-6ZM528 208h6v6h-6ZM550 222h6v6h-6ZM528 236h6v6h-6ZM550 236h6v6h-6ZM580 224h6v6h-6ZM572 238h6v6h-6ZM580 238h6v6h-6ZM572 252h6v6h-6ZM602 200h6v6h-6ZM632 200h6v6h-6ZM602 214h6v6h-6ZM632 228h6v6h-6ZM654 218h6v6h-6ZM668 232h6v6h-6ZM654 246h6v6h-6ZM668 246h6v6h-6ZM716 196h6v6h-6ZM690 210h6v6h-6ZM716 210h6v6h-6ZM690 224h6v6h-6ZM738 214h6v6h-6ZM756 214h6v6h-6ZM738 228h6v6h-6ZM756 242h6v6h-6ZM778 192h6v6h-6ZM812 206h6v6h-6ZM778 220h6v6h-6ZM812 220h6v6h-6ZM848 210h6v6h-6ZM834 224h6v6h-6ZM848 224h6v6h-6ZM834 238h6v6h-6ZM870 186h6v6h-6ZM898 186h6v6h-6ZM870 200h6v6h-6ZM898 214h6v6h-6ZM920 220h6v6h-6ZM938 234h6v6h-6ZM920 248h6v6h-6ZM938 248h6v6h-6ZM994 198h6v6h-6ZM960 212h6v6h-6ZM994 212h6v6h-6ZM960 226h6v6h-6ZM1016 180h6v6h-6ZM1034 180h6v6h-6ZM1016 194h6v6h-6ZM1034 208h6v6h-6ZM1056 216h6v6h-6ZM1086 230h6v6h-6ZM1056 244h6v6h-6ZM1086 244h6v6h-6ZM1126 196h6v6h-6ZM1108 210h6v6h-6ZM1126 210h6v6h-6ZM1108 224h6v6h-6ZM1148 210h6v6h-6ZM1186 210h6v6h-6ZM1148 224h6v6h-6ZM1186 238h6v6h-6Z"/><path class="sc-night f-light" d="M8 206h6v6h-6ZM32 234h6v6h-6ZM72 196h6v6h-6ZM54 210h6v6h-6ZM128 214h6v6h-6ZM94 228h6v6h-6ZM150 194h6v6h-6ZM162 222h6v6h-6ZM214 238h6v6h-6ZM184 252h6v6h-6ZM256 202h6v6h-6ZM234 216h6v6h-6ZM278 216h6v6h-6ZM296 244h6v6h-6ZM342 202h6v6h-6ZM318 216h6v6h-6ZM382 222h6v6h-6ZM364 236h6v6h-6ZM404 236h6v6h-6ZM412 264h6v6h-6ZM506 246h6v6h-6ZM494 260h6v6h-6ZM550 208h6v6h-6ZM528 222h6v6h-6ZM572 224h6v6h-6ZM580 252h6v6h-6ZM632 214h6v6h-6ZM602 228h6v6h-6ZM668 218h6v6h-6ZM654 232h6v6h-6ZM690 196h6v6h-6ZM716 224h6v6h-6ZM756 228h6v6h-6ZM738 242h6v6h-6ZM812 192h6v6h-6ZM778 206h6v6h-6ZM834 210h6v6h-6ZM848 238h6v6h-6ZM898 200h6v6h-6ZM870 214h6v6h-6ZM938 220h6v6h-6ZM920 234h6v6h-6ZM960 198h6v6h-6ZM994 226h6v6h-6ZM1034 194h6v6h-6ZM1016 208h6v6h-6ZM1086 216h6v6h-6ZM1056 230h6v6h-6ZM1108 196h6v6h-6ZM1126 224h6v6h-6ZM1186 224h6v6h-6ZM1148 238h6v6h-6Z"/><path class="sc-day f-city-2" d="M8 206h6v6h-6ZM32 234h6v6h-6ZM72 196h6v6h-6ZM54 210h6v6h-6ZM128 214h6v6h-6ZM94 228h6v6h-6ZM150 194h6v6h-6ZM162 222h6v6h-6ZM214 238h6v6h-6ZM184 252h6v6h-6ZM256 202h6v6h-6ZM234 216h6v6h-6ZM278 216h6v6h-6ZM296 244h6v6h-6ZM342 202h6v6h-6ZM318 216h6v6h-6ZM382 222h6v6h-6ZM364 236h6v6h-6ZM404 236h6v6h-6ZM412 264h6v6h-6ZM506 246h6v6h-6ZM494 260h6v6h-6ZM550 208h6v6h-6ZM528 222h6v6h-6ZM572 224h6v6h-6ZM580 252h6v6h-6ZM632 214h6v6h-6ZM602 228h6v6h-6ZM668 218h6v6h-6ZM654 232h6v6h-6ZM690 196h6v6h-6ZM716 224h6v6h-6ZM756 228h6v6h-6ZM738 242h6v6h-6ZM812 192h6v6h-6ZM778 206h6v6h-6ZM834 210h6v6h-6ZM848 238h6v6h-6ZM898 200h6v6h-6ZM870 214h6v6h-6ZM938 220h6v6h-6ZM920 234h6v6h-6ZM960 198h6v6h-6ZM994 226h6v6h-6ZM1034 194h6v6h-6ZM1016 208h6v6h-6ZM1086 216h6v6h-6ZM1056 230h6v6h-6ZM1108 196h6v6h-6ZM1126 224h6v6h-6ZM1186 224h6v6h-6ZM1148 238h6v6h-6Z"/><g class="sc-fx" aria-hidden="true"></g><g id="sc-101"><path class="ln s-outline" stroke-width="3" d="M455 82V108"/><rect class="f-t101 ol2" x="449" y="104" width="12" height="9"/><rect class="f-t101 ol2" x="444" y="112" width="22" height="9"/><rect class="f-t101 ol2" x="440" y="120" width="30" height="11"/><path class="f-t101 ol2" d="M437 250L473 250L483 330L427 330Z"/><path class="f-t101 ol2" d="M432 130L478 130L472 145L438 145ZM432 145L478 145L472 160L438 160ZM432 160L478 160L472 175L438 175ZM432 175L478 175L472 190L438 190ZM432 190L478 190L472 205L438 205ZM432 205L478 205L472 220L438 220ZM432 220L478 220L472 235L438 235ZM432 235L478 235L472 250L438 250Z"/><path class="ln s-t101-d" stroke-width="2" d="M455 133V142M455 148V157M455 163V172M455 178V187M455 193V202M455 208V217M455 223V232M455 238V247"/><circle class="f-sun-2 ol2" cx="455" cy="256" r="7"/><path class="sc-night f-light" d="M448 135h14v4h-14ZM448 150h14v4h-14ZM448 165h14v4h-14ZM448 180h14v4h-14ZM448 195h14v4h-14ZM448 210h14v4h-14ZM448 225h14v4h-14ZM448 240h14v4h-14ZM452 78h6v6h-6Z"/></g><rect class="f-lilac ol" x="-6" y="150" width="128" height="180"/><rect class="f-trim ol2" x="-10" y="145" width="136" height="9" rx="2"/><path class="ln s-iron" stroke-width="3" d="M28 136V145 M46 136V145"/><rect class="f-tank ol2" x="24" y="118" width="26" height="20" rx="6"/><path class="ln ol2" d="M26 128H48"/><path class="f-window ol2" d="M15 166h22v18h-22ZM79 166h22v18h-22ZM15 200h22v18h-22ZM79 200h22v18h-22ZM15 234h22v18h-22ZM79 234h22v18h-22ZM15 268h22v18h-22ZM79 268h22v18h-22Z"/><path class="ln s-bar" stroke-width="2" d="M13 164h26v21h-26Z M22 164v21 M30 164v21M13 198h26v21h-26Z M22 198v21 M30 198v21M13 232h26v21h-26Z M22 232v21 M30 232v21M13 266h26v21h-26Z M22 266v21 M30 266v21"/><path class="f-tank ol2" d="M103 208h10v8h-10ZM103 276h10v8h-10Z"/><rect class="f-mint ol" x="122" y="178" width="120" height="152"/><rect class="f-trim ol2" x="118" y="173" width="128" height="9" rx="2"/><path class="f-window ol2" d="M141 194h22v18h-22ZM201 194h22v18h-22ZM141 228h22v18h-22ZM201 228h22v18h-22ZM141 262h22v18h-22ZM201 262h22v18h-22ZM141 296h22v18h-22ZM201 296h22v18h-22Z"/><path class="ln s-bar" stroke-width="2" d="M199 226h26v21h-26Z M208 226v21 M216 226v21M199 294h26v21h-26Z M208 294v21 M216 294v21"/><path class="f-trim ol2" d="M196 212h32v5h-32ZM196 246h32v5h-32ZM196 280h32v5h-32ZM196 314h32v5h-32Z"/><path class="f-leaf" d="M199 204a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M216 204a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM199 238a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M216 238a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM199 272a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M216 272a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM199 306a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M216 306a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z"/><path class="f-pot" d="M200 206h7v6h-7Z M217 206h7v6h-7ZM200 240h7v6h-7Z M217 240h7v6h-7ZM200 274h7v6h-7Z M217 274h7v6h-7ZM200 308h7v6h-7Z M217 308h7v6h-7Z"/><path class="f-flower" d="M201 200a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M218 200a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM201 268a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M218 268a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z"/><path class="f-tank ol2" d="M165 202h10v8h-10ZM165 270h10v8h-10Z"/><rect class="f-peach ol" x="250" y="196" width="150" height="134"/><rect class="f-trim ol2" x="246" y="191" width="158" height="9" rx="2"/><path class="f-window ol2" d="M264 212h22v18h-22ZM314 212h22v18h-22ZM364 212h22v18h-22ZM264 246h22v18h-22ZM314 246h22v18h-22ZM364 246h22v18h-22ZM264 280h22v18h-22ZM314 280h22v18h-22ZM364 280h22v18h-22Z"/><path class="ln s-bar" stroke-width="2" d="M262 210h26v21h-26Z M271 210v21 M279 210v21M312 210h26v21h-26Z M321 210v21 M329 210v21M312 244h26v21h-26Z M321 244v21 M329 244v21M262 278h26v21h-26Z M271 278v21 M279 278v21M312 278h26v21h-26Z M321 278v21 M329 278v21"/><path class="f-trim ol2" d="M259 230h32v5h-32ZM259 264h32v5h-32ZM259 298h32v5h-32Z"/><path class="f-leaf" d="M262 222a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M279 222a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM262 256a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M279 256a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM262 290a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M279 290a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z"/><path class="f-pot" d="M263 224h7v6h-7Z M280 224h7v6h-7ZM263 258h7v6h-7Z M280 258h7v6h-7ZM263 292h7v6h-7Z M280 292h7v6h-7Z"/><path class="f-flower" d="M264 252a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M281 252a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z"/><path class="f-tank ol2" d="M388 220h10v8h-10ZM388 288h10v8h-10Z"/><rect class="f-pink ol" x="404" y="254" width="112" height="76"/><rect class="f-trim ol2" x="400" y="249" width="120" height="9" rx="2"/><path class="f-window ol2" d="M421 270h22v18h-22ZM477 270h22v18h-22Z"/><path class="ln s-bar" stroke-width="2" d="M475 268h26v21h-26Z M484 268v21 M492 268v21"/><path class="f-trim ol2" d="M416 288h32v5h-32Z"/><path class="f-leaf" d="M419 280a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M436 280a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z"/><path class="f-pot" d="M420 282h7v6h-7Z M437 282h7v6h-7Z"/><path class="f-flower" d="M421 276a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M438 276a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z"/><rect class="f-butter ol" x="522" y="182" width="136" height="148"/><rect class="f-trim ol2" x="518" y="177" width="144" height="9" rx="2"/><path class="ln s-iron" stroke-width="3" d="M616 168V177 M634 168V177"/><rect class="f-tank ol2" x="612" y="150" width="26" height="20" rx="6"/><path class="ln ol2" d="M614 160H636"/><path class="f-window ol2" d="M533.7 198h22v18h-22ZM579 198h22v18h-22ZM624.3 198h22v18h-22ZM533.7 232h22v18h-22ZM579 232h22v18h-22ZM624.3 232h22v18h-22ZM533.7 266h22v18h-22ZM579 266h22v18h-22ZM624.3 266h22v18h-22Z"/><path class="ln s-bar" stroke-width="2" d="M531.7 196h26v21h-26Z M540.7 196v21 M548.7 196v21M531.7 230h26v21h-26Z M540.7 230v21 M548.7 230v21M622.3 230h26v21h-26Z M631.3 230v21 M639.3 230v21M531.7 264h26v21h-26Z M540.7 264v21 M548.7 264v21"/><path class="f-trim ol2" d="M619.3 216h32v5h-32ZM619.3 250h32v5h-32ZM619.3 284h32v5h-32Z"/><path class="f-leaf" d="M622.3 208a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M639.3 208a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM622.3 242a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M639.3 242a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM622.3 276a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M639.3 276a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z"/><path class="f-pot" d="M623.3 210h7v6h-7Z M640.3 210h7v6h-7ZM623.3 244h7v6h-7Z M640.3 244h7v6h-7ZM623.3 278h7v6h-7Z M640.3 278h7v6h-7Z"/><path class="f-flower" d="M624.3 204a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M641.3 204a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM624.3 272a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M641.3 272a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z"/><path class="f-tank ol2" d="M603 206h10v8h-10ZM603 274h10v8h-10Z"/><rect class="f-blue ol" x="660" y="206" width="92" height="124"/><rect class="f-trim ol2" x="656" y="201" width="100" height="9" rx="2"/><path class="f-window ol2" d="M672 222h22v18h-22ZM718 222h22v18h-22ZM672 256h22v18h-22ZM718 256h22v18h-22ZM672 290h22v18h-22ZM718 290h22v18h-22Z"/><path class="ln s-bar" stroke-width="2" d="M716 220h26v21h-26Z M725 220v21 M733 220v21M716 288h26v21h-26Z M725 288v21 M733 288v21"/><path class="f-trim ol2" d="M713 240h32v5h-32ZM713 274h32v5h-32ZM713 308h32v5h-32Z"/><path class="f-leaf" d="M716 232a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M733 232a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM716 266a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M733 266a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM716 300a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M733 300a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z"/><path class="f-pot" d="M717 234h7v6h-7Z M734 234h7v6h-7ZM717 268h7v6h-7Z M734 268h7v6h-7ZM717 302h7v6h-7Z M734 302h7v6h-7Z"/><path class="f-flower" d="M718 262a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M735 262a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z"/><path class="f-tank ol2" d="M696 264h10v8h-10Z"/><rect class="f-lilac ol" x="752" y="132" width="184" height="198"/><rect class="f-trim ol2" x="748" y="127" width="192" height="9" rx="2"/><path class="ln s-iron" stroke-width="3" d="M866 118V127 M884 118V127"/><rect class="f-tank ol2" x="862" y="100" width="26" height="20" rx="6"/><path class="ln ol2" d="M864 110H886"/><path class="f-window ol2" d="M764 148h22v18h-22ZM810 148h22v18h-22ZM856 148h22v18h-22ZM902 148h22v18h-22ZM764 182h22v18h-22ZM810 182h22v18h-22ZM856 182h22v18h-22ZM902 182h22v18h-22ZM764 216h22v18h-22ZM810 216h22v18h-22ZM856 216h22v18h-22ZM902 216h22v18h-22ZM764 250h22v18h-22ZM810 250h22v18h-22ZM856 250h22v18h-22ZM902 250h22v18h-22ZM764 284h22v18h-22ZM810 284h22v18h-22ZM856 284h22v18h-22ZM902 284h22v18h-22Z"/><path class="ln s-bar" stroke-width="2" d="M854 146h26v21h-26Z M863 146v21 M871 146v21M808 180h26v21h-26Z M817 180v21 M825 180v21M854 180h26v21h-26Z M863 180v21 M871 180v21M854 214h26v21h-26Z M863 214v21 M871 214v21M808 248h26v21h-26Z M817 248v21 M825 248v21M854 248h26v21h-26Z M863 248v21 M871 248v21M854 282h26v21h-26Z M863 282v21 M871 282v21"/><path class="f-trim ol2" d="M805 166h32v5h-32ZM805 200h32v5h-32ZM805 234h32v5h-32ZM805 268h32v5h-32ZM805 302h32v5h-32Z"/><path class="f-leaf" d="M808 158a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M825 158a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM808 192a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M825 192a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM808 226a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M825 226a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM808 260a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M825 260a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM808 294a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M825 294a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z"/><path class="f-pot" d="M809 160h7v6h-7Z M826 160h7v6h-7ZM809 194h7v6h-7Z M826 194h7v6h-7ZM809 228h7v6h-7Z M826 228h7v6h-7ZM809 262h7v6h-7Z M826 262h7v6h-7ZM809 296h7v6h-7Z M826 296h7v6h-7Z"/><path class="f-flower" d="M810 154a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M827 154a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM810 222a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M827 222a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM810 290a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M827 290a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z"/><path class="f-tank ol2" d="M788 156h10v8h-10ZM788 224h10v8h-10ZM788 292h10v8h-10Z"/><rect class="f-butter ol" x="940" y="142" width="122" height="188"/><rect class="f-trim ol2" x="936" y="137" width="130" height="9" rx="2"/><path class="ln s-iron" stroke-width="3" d="M964 128V137 M982 128V137"/><rect class="f-tank ol2" x="960" y="110" width="26" height="20" rx="6"/><path class="ln ol2" d="M962 120H984"/><path class="f-window ol2" d="M959.5 158h22v18h-22ZM1020.5 158h22v18h-22ZM959.5 192h22v18h-22ZM1020.5 192h22v18h-22ZM959.5 226h22v18h-22ZM1020.5 226h22v18h-22ZM959.5 260h22v18h-22ZM1020.5 260h22v18h-22ZM959.5 294h22v18h-22ZM1020.5 294h22v18h-22Z"/><path class="ln s-bar" stroke-width="2" d="M1018.5 156h26v21h-26Z M1027.5 156v21 M1035.5 156v21M957.5 190h26v21h-26Z M966.5 190v21 M974.5 190v21M1018.5 190h26v21h-26Z M1027.5 190v21 M1035.5 190v21M1018.5 224h26v21h-26Z M1027.5 224v21 M1035.5 224v21M957.5 258h26v21h-26Z M966.5 258v21 M974.5 258v21M1018.5 258h26v21h-26Z M1027.5 258v21 M1035.5 258v21M1018.5 292h26v21h-26Z M1027.5 292v21 M1035.5 292v21"/><path class="f-trim ol2" d="M954.5 176h32v5h-32ZM954.5 210h32v5h-32ZM954.5 244h32v5h-32ZM954.5 278h32v5h-32ZM954.5 312h32v5h-32Z"/><path class="f-leaf" d="M957.5 168a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M974.5 168a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM957.5 202a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M974.5 202a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM957.5 236a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M974.5 236a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM957.5 270a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M974.5 270a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM957.5 304a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M974.5 304a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z"/><path class="f-pot" d="M958.5 170h7v6h-7Z M975.5 170h7v6h-7ZM958.5 204h7v6h-7Z M975.5 204h7v6h-7ZM958.5 238h7v6h-7Z M975.5 238h7v6h-7ZM958.5 272h7v6h-7Z M975.5 272h7v6h-7ZM958.5 306h7v6h-7Z M975.5 306h7v6h-7Z"/><path class="f-flower" d="M959.5 164a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M976.5 164a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM959.5 232a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M976.5 232a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM959.5 300a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M976.5 300a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z"/><rect class="f-blue ol" x="1062" y="172" width="144" height="158"/><rect class="f-trim ol2" x="1058" y="167" width="152" height="9" rx="2"/><path class="f-window ol2" d="M1075 188h22v18h-22ZM1123 188h22v18h-22ZM1171 188h22v18h-22ZM1075 222h22v18h-22ZM1123 222h22v18h-22ZM1171 222h22v18h-22ZM1075 256h22v18h-22ZM1123 256h22v18h-22ZM1171 256h22v18h-22ZM1075 290h22v18h-22ZM1123 290h22v18h-22ZM1171 290h22v18h-22Z"/><path class="ln s-bar" stroke-width="2" d="M1073 186h26v21h-26Z M1082 186v21 M1090 186v21M1073 220h26v21h-26Z M1082 220v21 M1090 220v21M1169 220h26v21h-26Z M1178 220v21 M1186 220v21M1073 254h26v21h-26Z M1082 254v21 M1090 254v21M1073 288h26v21h-26Z M1082 288v21 M1090 288v21M1169 288h26v21h-26Z M1178 288v21 M1186 288v21"/><path class="f-trim ol2" d="M1166 206h32v5h-32ZM1166 240h32v5h-32ZM1166 274h32v5h-32ZM1166 308h32v5h-32Z"/><path class="f-leaf" d="M1169 198a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M1186 198a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM1169 232a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M1186 232a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM1169 266a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M1186 266a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0ZM1169 300a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z M1186 300a4.5 4.5 0 1 0 9 0a4.5 4.5 0 1 0 -9 0Z"/><path class="f-pot" d="M1170 200h7v6h-7Z M1187 200h7v6h-7ZM1170 234h7v6h-7Z M1187 234h7v6h-7ZM1170 268h7v6h-7Z M1187 268h7v6h-7ZM1170 302h7v6h-7Z M1187 302h7v6h-7Z"/><path class="f-flower" d="M1171 194a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M1188 194a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM1171 262a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z M1188 262a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z"/><path class="f-tank ol2" d="M1147 196h10v8h-10ZM1147 264h10v8h-10Z"/><path class="ln s-iron" stroke-width="2" d="M948 196 H1052"/><path class="f-pink ol2" d="M962 196h20l4 8h-5v14h-18v-14h-5Z"/><path class="f-blue ol2" d="M1000 196h14v20h-14Z"/><path class="f-mint ol2" d="M1024 196h18l3 7h-4v12h-16v-12h-4Z"/><rect class="f-trunk ol2" x="173" y="250" width="10" height="80"/><path class="f-leaf-2 ol" d="M148 242 a30 30 0 0 1 58 -6 a22 22 0 0 1 4 40 a24 24 0 0 1 -40 6 a22 22 0 0 1 -22 -40Z"/><path class="ln ol2" d="M168 244q6 6 12 0"/><rect class="f-trunk ol2" x="1167" y="246" width="10" height="84"/><path class="f-leaf-2 ol" d="M1142 238 a30 30 0 0 1 58 -6 a22 22 0 0 1 4 40 a24 24 0 0 1 -40 6 a22 22 0 0 1 -22 -40Z"/><path class="ln ol2" d="M1162 240q6 6 12 0"/><path class="ln s-fence" stroke-width="1.5" d="M-120 230L-32 318M-120 230L-208 318M-84 230L4 318M-84 230L-172 318M-48 230L40 318M-48 230L-136 318M-12 230L76 318M-12 230L-100 318M24 230L112 318M24 230L-64 318M60 230L148 318M60 230L-28 318M96 230L184 318M96 230L8 318M132 230L220 318M132 230L44 318M168 230L256 318M168 230L80 318M204 230L292 318M204 230L116 318M240 230L328 318M240 230L152 318M276 230L364 318M276 230L188 318M312 230L400 318M312 230L224 318M348 230L436 318M348 230L260 318M384 230L472 318M384 230L296 318M420 230L508 318M420 230L332 318M456 230L544 318M456 230L368 318M492 230L580 318M492 230L404 318M528 230L616 318M528 230L440 318M564 230L652 318M564 230L476 318M600 230L688 318M600 230L512 318M636 230L724 318M636 230L548 318M672 230L760 318M672 230L584 318M708 230L796 318M708 230L620 318M744 230L832 318M744 230L656 318M780 230L868 318M780 230L692 318M816 230L904 318M816 230L728 318M852 230L940 318M852 230L764 318M888 230L976 318M888 230L800 318M924 230L1012 318M924 230L836 318M960 230L1048 318M960 230L872 318M996 230L1084 318M996 230L908 318M1032 230L1120 318M1032 230L944 318M1068 230L1156 318M1068 230L980 318M1104 230L1192 318M1104 230L1016 318M1140 230L1228 318M1140 230L1052 318M1176 230L1264 318M1176 230L1088 318M1212 230L1300 318M1212 230L1124 318M1248 230L1336 318M1248 230L1160 318M1284 230L1372 318M1284 230L1196 318"/><path class="f-post" d="M0 226h1200v5h-1200Z M0 314h1200v5h-1200Z"/><path class="f-post ol2" d="M6 222h8v104h-8ZM166 222h8v104h-8ZM406 222h8v104h-8ZM596 222h8v104h-8ZM1006 222h8v104h-8ZM1186 222h8v104h-8Z"/><g class="sc-bob"><path class="ln s-iron" stroke-width="1.5" d="M0 232Q85 256 170 232M170 232Q290 256 410 232M410 232Q505 256 600 232M600 232Q680 256 760 232M760 232Q885 256 1010 232M1010 232Q1105 256 1200 232"/><path class="f-peach ol2" stroke-width="1.5" d="M20.3 235.3L36.3 235.3L28.3 250.3ZM215.3 236.1L231.3 236.1L223.3 251.1ZM375.3 234.4L391.3 234.4L383.3 249.4ZM564.9 234.9L580.9 234.9L572.9 249.9ZM779.8 234.4L795.8 234.4L787.8 249.4ZM946.4 236.1L962.4 236.1L954.4 251.1ZM1137.7 236.9L1153.7 236.9L1145.7 251.9Z"/><path class="f-butter ol2" stroke-width="1.5" d="M48.7 237.3L64.7 237.3L56.7 252.3ZM242 237.3L258 237.3L250 252.3ZM429.1 234.9L445.1 234.9L437.1 249.9ZM618.7 235.3L634.7 235.3L626.7 250.3ZM807.6 236.1L823.6 236.1L815.6 251.1ZM974.2 234.4L990.2 234.4L982.2 249.4ZM1164.9 234.9L1180.9 234.9L1172.9 249.9Z"/><path class="f-mint ol2" stroke-width="1.5" d="M77 238L93 238L85 253ZM268.7 237.9L284.7 237.9L276.7 252.9ZM456.3 236.9L472.3 236.9L464.3 251.9ZM645.3 237.3L661.3 237.3L653.3 252.3ZM835.3 237.3L851.3 237.3L843.3 252.3ZM1029.1 234.9L1045.1 234.9L1037.1 249.9Z"/><path class="f-blue ol2" stroke-width="1.5" d="M105.3 237.3L121.3 237.3L113.3 252.3ZM295.3 237.9L311.3 237.9L303.3 252.9ZM483.4 237.9L499.4 237.9L491.4 252.9ZM672 238L688 238L680 253ZM863.1 237.9L879.1 237.9L871.1 252.9ZM1056.3 236.9L1072.3 236.9L1064.3 251.9Z"/><path class="f-lilac ol2" stroke-width="1.5" d="M133.7 235.3L149.7 235.3L141.7 250.3ZM322 237.3L338 237.3L330 252.3ZM510.6 237.9L526.6 237.9L518.6 252.9ZM698.7 237.3L714.7 237.3L706.7 252.3ZM890.9 237.9L906.9 237.9L898.9 252.9ZM1083.4 237.9L1099.4 237.9L1091.4 252.9Z"/><path class="f-pink ol2" stroke-width="1.5" d="M188.7 234.4L204.7 234.4L196.7 249.4ZM348.7 236.1L364.7 236.1L356.7 251.1ZM537.7 236.9L553.7 236.9L545.7 251.9ZM725.3 235.3L741.3 235.3L733.3 250.3ZM918.7 237.3L934.7 237.3L926.7 252.3ZM1110.6 237.9L1126.6 237.9L1118.6 252.9Z"/></g><rect class="f-court-2" y="322" width="1200" height="98"/><rect class="f-post" y="322" width="1200" height="5"/><rect class="f-court" x="232" y="334" width="736" height="90"/><path class="f-key" d="M286 334H374L398 412H262Z"/><path class="ln s-line" stroke-width="3" d="M232 424V334H968V424 M286 334L262 412H398L374 334 M262 412A68 12 0 0 1 398 412 M240 334C240 392 278 426 330 426C382 426 420 392 420 334 M968 334"/><path class="ln s-line" stroke-width="3" d="M700 334C700 380 780 420 840 424"/><g class="sc-lamp"><rect class="f-iron" x="689" y="184" width="6" height="148"/><rect class="f-iron" x="684" y="324" width="16" height="9" rx="2"/><path class="f-iron" d="M681 184h22l-4 -6h-14Z"/><rect class="f-lamp ol2" x="684" y="164" width="16" height="16" rx="3"/><path class="f-iron ol2" d="M680 164L692 152L704 164Z"/></g><g class="sc-lamp"><rect class="f-iron" x="1063" y="168" width="6" height="164"/><rect class="f-iron" x="1058" y="324" width="16" height="9" rx="2"/><path class="f-iron" d="M1055 168h22l-4 -6h-14Z"/><rect class="f-lamp ol2" x="1058" y="148" width="16" height="16" rx="3"/><path class="f-iron ol2" d="M1054 148L1066 136L1078 148Z"/></g><g class="sc-vend"><rect class="f-vend ol" x="20" y="236" width="82" height="98" rx="6"/><rect class="f-cream ol2" x="27" y="243" width="68" height="22" rx="4"/><text class="f-ink" x="61" y="260" font-size="17" text-anchor="middle" letter-spacing="4">飲料</text><rect class="f-vlit ol2" x="27" y="270" width="48" height="40" rx="2"/><rect class="f-key" x="31" y="274" width="7" height="13" rx="2"/><rect class="f-pink" x="42" y="274" width="7" height="13" rx="2"/><rect class="f-butter" x="53" y="274" width="7" height="13" rx="2"/><rect class="f-mint" x="64" y="274" width="7" height="13" rx="2"/><rect class="f-pink" x="31" y="292" width="7" height="13" rx="2"/><rect class="f-butter" x="42" y="292" width="7" height="13" rx="2"/><rect class="f-mint" x="53" y="292" width="7" height="13" rx="2"/><rect class="f-key" x="64" y="292" width="7" height="13" rx="2"/><path class="f-label ol2" d="M83 274h12v8h-12Z M83 287h12v8h-12Z"/><circle class="f-gold" cx="89" cy="304" r="3"/><rect class="f-iron" x="31" y="316" width="44" height="10" rx="2"/></g><g class="sc-bench"><path class="f-iron" d="M118 334h6v44h-6Z M202 334h6v44h-6Z M112 360h6v18h-6Z M208 360h6v18h-6Z"/><rect class="f-wood ol2" x="110" y="324" width="106" height="9" rx="3"/><rect class="f-wood ol2" x="110" y="337" width="106" height="9" rx="3"/><rect class="f-wood ol2" x="104" y="354" width="118" height="10" rx="3"/><rect class="f-blue ol2" x="190" y="337" width="11" height="17" rx="3"/><rect class="f-purple" x="191" y="333" width="9" height="5" rx="1"/><path class="f-cream ol2" d="M130 354 q4 -10 16 -10 h22 q-6 4 -4 10Z"/></g><g transform="translate(160 392)"><circle class="f-ball ol2" r="12"/><path class="ln s-seam" stroke-width="1.6" d="M-12 0H12M0 -12V12M-8 -9Q-3 0 -8 9M8 -9Q3 0 8 9"/></g><g class="sc-stand"><path class="f-iron" d="M996 310h5v76h-5Z M1104 310h5v76h-5Z M1050 310h5v76h-5Z"/><rect class="f-trim ol2" x="996" y="309" width="112" height="18"/><rect class="f-blue ol2" x="994" y="300" width="116" height="10" rx="3"/><rect class="f-trim ol2" x="990" y="337" width="124" height="18"/><rect class="f-peach ol2" x="988" y="328" width="128" height="10" rx="3"/><rect class="f-trim ol2" x="984" y="365" width="136" height="18"/><rect class="f-lilac ol2" x="982" y="356" width="140" height="10" rx="3"/><path class="ln s-iron" stroke-width="3" d="M982 356V290 M1122 356V290 M982 300H990 M1114 300H1122"/><g transform="translate(1022 318)"><circle class="f-ball ol2" r="10"/><path class="ln s-seam" stroke-width="1.5" d="M-10 0H10M0 -10V10M-7 -7Q-2 0 -7 7M7 -7Q2 0 7 7"/></g><rect class="f-purple ol2" x="1070" y="341" width="22" height="15" rx="3"/><rect class="f-gold" x="1070" y="346" width="22" height="3"/></g><g class="sc-bike"><circle class="ln s-outline" stroke-width="3.5" cx="1136" cy="374" r="17"/><circle class="ln s-outline" stroke-width="3.5" cx="1180" cy="374" r="17"/><circle class="f-iron" cx="1136" cy="374" r="3"/><circle class="f-iron" cx="1180" cy="374" r="3"/><path class="ln s-bike" stroke-width="4" d="M1136 374L1156 374L1150 348L1136 374 M1156 374L1170 346L1150 348 M1170 346L1180 374 M1168 342L1172 334"/><path class="ln s-iron" stroke-width="3" d="M1166 334H1178"/><rect class="f-iron" x="1142" y="342" width="15" height="5" rx="2"/><path class="f-wood ol2" d="M1174 334h20l-2 14h-16Z"/><circle class="f-flower" cx="1182" cy="331" r="4"/><circle class="f-leaf" cx="1189" cy="332" r="3.5"/></g><g class="sc-gate"><rect class="f-navy ol2" x="715" y="150" width="11" height="182"/><rect class="f-navy ol2" x="942" y="150" width="11" height="182"/><path class="f-purple ol" d="M705 198V160Q834 114 963 160V198Z"/><path class="f-gold" d="M716 191V167Q834 126 952 167V191Z"/><text class="f-ink" x="834" y="186" font-size="32" text-anchor="middle">睿洋籃球場</text><g transform="translate(834 124)"><circle class="f-ball ol2" r="12"/><path class="ln s-seam" stroke-width="1.6" d="M-12 0H12M0 -12V12M-8 -9Q-3 0 -8 9M8 -9Q3 0 8 9"/></g></g><g id="sc-board"><rect class="f-board ol" x="726" y="204" width="216" height="116" rx="8"/><text class="f-label" x="834" y="225" font-size="16" text-anchor="middle" letter-spacing="6">戰績</text><rect class="f-cell ol2" x="734" y="232" width="98" height="58" rx="6"/><rect class="f-cell ol2" x="836" y="232" width="98" height="58" rx="6"/><text id="sb-w" class="f-digit" x="783" y="277" font-size="44" text-anchor="middle">0</text><text id="sb-l" class="f-digit" x="885" y="277" font-size="44" text-anchor="middle">0</text><text class="f-label" x="783" y="311" font-size="16" text-anchor="middle">勝</text><text class="f-label" x="885" y="311" font-size="16" text-anchor="middle">敗</text><circle class="f-gold" cx="740" cy="216" r="3.5"/><circle class="f-gold" cx="928" cy="216" r="3.5"/></g><g id="sc-hoop" data-rim-x="330" data-rim-y="228"><rect class="f-navy ol2" x="322" y="214" width="16" height="118"/><rect class="f-purple ol2" x="316" y="272" width="28" height="56" rx="6"/><rect class="f-gold" x="317" y="290" width="26" height="5"/><rect class="f-iron" x="310" y="326" width="40" height="8" rx="2"/><rect class="f-bb ol" x="266" y="138" width="128" height="84" rx="7"/><rect class="ln s-rim" stroke-width="5" x="306" y="178" width="48" height="36"/><rect class="f-rim" x="268" y="140" width="124" height="6" rx="2"/><rect class="f-iron" x="323" y="220" width="14" height="9" rx="2"/><path class="ln s-outline" stroke-width="8" d="M300 228A30 7 0 0 1 360 228"/><path class="ln s-rim" stroke-width="4.5" d="M300 228A30 7 0 0 1 360 228"/><g id="sc-shot" opacity="0"><circle class="f-ball ol2" r="15"/><path class="ln s-seam" stroke-width="2" d="M-15 0H15M0 -15V15M-10 -11Q-4 0 -10 11M10 -11Q4 0 10 11"/></g><g class="sc-net"><path class="ln s-net" stroke-width="2.5" d="M302 230L312 266 M314 234L318 268 M330 235V268 M346 234L342 268 M358 230L348 266 M302 230L318 250L330 235L342 250L358 230 M312 250L330 266L348 250 M318 250L313 266 M342 250L347 266"/><path class="ln s-net" stroke-width="2.5" d="M312 266H348"/><path class="ln s-outline" stroke-width="8" d="M300 228A30 7 0 0 0 360 228"/><path class="ln s-rim" stroke-width="4.5" d="M300 228A30 7 0 0 0 360 228"/></g></g><g id="cat-slot" transform="translate(520,228)"><svg id="sceneCat" class="bcat bcat-full" x="0" y="0" width="150" height="165" viewBox="0 0 150 165" data-mood="calm" aria-hidden="true"><style>
+.bcat{stroke-linejoin:round;stroke-linecap:round}
+.bcat-full{stroke-width:2.4}
+.bcat-head{stroke-width:3.6}
+.bcat text{font-family:Huninn,"PingFang TC","Microsoft JhengHei",sans-serif;font-weight:700}
+.bcat .bc-m-up,.bcat .bc-m-calm,.bcat .bc-m-down,.bcat .bc-spark,.bcat .bc-sweat{display:none}
+.bcat[data-mood="up"] .bc-m-up, .bcat[data-mood="up"] .bc-spark, .bcat[data-mood="calm"] .bc-m-calm, .bcat:not([data-mood]) .bc-m-calm, .bcat[data-mood="down"] .bc-m-down, .bcat[data-mood="down"] .bc-sweat{display:inline}
+.bcat .bc-tail{transform-box:fill-box;transform-origin:100% 74%}
+.bcat .bc-ball{transform-box:fill-box;transform-origin:50% 50%}
+</style>
+<g class="bc-tail" fill="none">
+<path d="M44,134 C24,145 9,138 12,111" stroke="#2b2140" stroke-width="12.5"/>
+<path d="M44,134 C24,145 9,138 12,111" stroke="#9db4cc" stroke-width="7.7"/>
+<path d="M23,136 L25.5,142 M14.5,126 L8.5,126.5" stroke="#6e86a3" stroke-width="3"/>
+</g>
+<g fill="none">
+<path d="M42,100 Q28,94 19,88 M86,100 Q104,95 120,99.5" stroke="#2b2140" stroke-width="12.5"/>
+<path d="M42,100 Q28,94 19,88 M86,100 Q104,95 120,99.5" stroke="#9db4cc" stroke-width="7.7"/>
+<path d="M102,94.5 L103,104 M31.5,90.5 L27.5,98.5" stroke="#6e86a3" stroke-width="2.6"/>
+<path d="M44,141 L40,151 M86,141 L91,151" stroke="#2b2140" stroke-width="14"/>
+<path d="M44,141 L40,151 M86,141 L91,151" stroke="#9db4cc" stroke-width="9.2"/>
+</g>
+<g stroke="#2b2140">
+<path d="M25,156 Q26,146.5 38,146.5 Q50,146.5 54,156Z" fill="#fff"/>
+<path d="M78,156 Q82,146.5 94,146.5 Q106,146.5 107,156Z" fill="#fff"/>
+<rect x="23" y="154.5" width="33" height="5.5" rx="2.7" fill="#f97316"/>
+<rect x="76" y="154.5" width="33" height="5.5" rx="2.7" fill="#f97316"/>
+<path d="M36,149.5 L40,151.5 M98,149.5 L94,151.5" fill="none" stroke-width="1.8"/>
+</g>
+<path d="M36,121 L94,121 L99,142 Q84,146 70,143 L65,135 L60,143 Q46,146 31,142Z" fill="#7c3aed" stroke="#2b2140"/>
+<path d="M40,124 L37,141.5 M90,124 L93,141.5" fill="none" stroke="#fbbf24" stroke-width="3"/>
+<path d="M38,92 Q64,84 90,92 L95,125 Q65,130 34,125Z" fill="#7c3aed" stroke="#2b2140"/>
+<path d="M36,120.5 Q65,125.5 94.2,120.5" fill="none" stroke="#fbbf24" stroke-width="3.4"/>
+<path d="M54,86 L64,98 L74,86Z" fill="#fff"/>
+<path d="M54,86 L64,98 L74,86" fill="none" stroke="#fbbf24" stroke-width="3.4"/>
+<text x="64.5" y="118" font-size="20" text-anchor="middle" fill="#fff" stroke="#2b2140" stroke-width="1.6" paint-order="stroke">10</text>
+<g stroke="#2b2140">
+<path d="M22,40 Q17,10 25,6 Q31,4 54,19Z" fill="#9db4cc"/>
+<path d="M106,40 Q111,10 103,6 Q97,4 74,19Z" fill="#9db4cc"/>
+</g>
+<path d="M28,32 Q25,14 29,11 Q33,10 46,20Z M100,32 Q103,14 99,11 Q95,10 82,20Z" fill="#f7a8b8"/>
+<path d="M64,16 C91,16 109,28 111,48 C113,72 93,86 64,86 C35,86 15,72 17,48 C19,28 37,16 64,16Z" fill="#9db4cc" stroke="#2b2140"/>
+<path d="M57,18.5 L58.5,25.5 M64,18 V25.5 M71,18.5 L69.5,25.5 M18,58 H25 M19,65 H25 M110,58 H103 M109,65 H103" fill="none" stroke="#6e86a3" stroke-width="3"/>
+<path d="M17,44 Q64,14 111,44 L111,53 Q64,24 17,53Z" fill="#fff" stroke="#2b2140"/>
+<path d="M17.2,48.5 Q64,19 110.8,48.5" fill="none" stroke="#f97316" stroke-width="2.8"/>
+<ellipse cx="64" cy="73" rx="17" ry="11" fill="#fff"/>
+<ellipse cx="32" cy="73" rx="7" ry="4.5" fill="#ffb3d1"/>
+<ellipse cx="96" cy="73" rx="7" ry="4.5" fill="#ffb3d1"/>
+<circle cx="46" cy="60" r="9" fill="#2b2140"/>
+<circle cx="82" cy="60" r="9" fill="#2b2140"/>
+<circle cx="43" cy="56.5" r="3.2" fill="#fff"/><circle cx="79" cy="56.5" r="3.2" fill="#fff"/>
+<circle cx="49" cy="63.5" r="1.5" fill="#fff"/><circle cx="85" cy="63.5" r="1.5" fill="#fff"/>
+<path d="M60.5,67 Q64,65 67.5,67 Q65.7,71 64,71 Q62.3,71 60.5,67Z" fill="#f48fb1" stroke="#2b2140" stroke-width="1.6"/>
+<g class="bc-m-calm" fill="none" stroke="#2b2140" stroke-width="2.2">
+<path d="M64,71 V73 M57,72.5 Q60.5,78 64,73 Q67.5,78 71,72.5"/>
+</g>
+<g class="bc-m-up" stroke="#2b2140" stroke-width="2.2">
+<path d="M56,72.5 Q64,75 72,72.5 Q71.5,84.5 64,84.5 Q56.5,84.5 56,72.5Z" fill="#7b2d43"/>
+<path d="M59.5,81 Q64,77 68.5,81 Q66.8,84 64,84 Q61.2,84 59.5,81Z" fill="#f48fb1" stroke="none"/>
+</g>
+<g class="bc-m-down" fill="none" stroke="#2b2140" stroke-width="2.4">
+<path d="M64,71 V75.5 M57,76 H71"/>
+<path d="M37,47.5 L53,50.5 M91,47.5 L75,50.5" stroke-width="3"/>
+</g>
+<g class="bc-ball">
+<circle cx="124" cy="119" r="13" fill="#f97316" stroke="#2b2140"/>
+<path d="M124,106 V132 M111,119 H137 M116,109.2 Q124.5,119 116,128.8 M132,109.2 Q123.5,119 132,128.8" fill="none" stroke="#7c2d12" stroke-width="2"/>
+</g>
+<g stroke="#2b2140">
+<ellipse cx="124" cy="98.5" rx="8.5" ry="6.5" fill="#fff"/>
+<path d="M120.5,101.5 V104.5 M124,102 V105 M127.5,101.5 V104.5" fill="none" stroke-width="1.6"/>
+<circle cx="15" cy="86" r="7" fill="#fff"/>
+<circle cx="9" cy="81" r="2.6" fill="#fff"/><circle cx="13.8" cy="78.4" r="2.6" fill="#fff"/><circle cx="19" cy="79.4" r="2.6" fill="#fff"/>
+</g>
+<g class="bc-spark" fill="#fbbf24" stroke="#2b2140" stroke-width="1.6">
+<path d="M132,13 L134.4,19.6 L141.4,20 L135.9,24.4 L137.8,31.2 L132,27.3 L126.2,31.2 L128.1,24.4 L122.6,20 L129.6,19.6Z"/>
+<path d="M142,38 L143.5,42 L147.7,42.3 L144.4,44.9 L145.5,49 L142,46.7 L138.5,49 L139.6,44.9 L136.3,42.3 L140.5,42Z"/>
+<path d="M9,10 L10.3,13.6 L14,13.8 L11.1,16.1 L12.1,19.7 L9,17.6 L5.9,19.7 L6.9,16.1 L4,13.8 L7.7,13.6Z"/>
+</g>
+<path class="bc-sweat" d="M120,22 Q126,31 126,35 A6,6 0 0,1 114,35 Q114,31 120,22Z" fill="#60a5fa" stroke="#2b2140" stroke-width="2"/></svg></g></svg></div>
+  <p class="cat-say" id="catSay" role="status" aria-live="polite"><b>籃球貓</b><span id="catText"></span></p>
+</div>
+
+<main class="wrap" id="app"></main>
+<nav class="tabbar hidden" id="tabbar" aria-label="分頁">
+  <button data-tab-btn="home"><span class="ic" aria-hidden="true">🏠</span>總覽</button>
+  <button data-tab-btn="charts"><span class="ic" aria-hidden="true">📊</span>圖表</button>
+  <button class="add" id="tabAdd"><span class="ic" aria-hidden="true"><svg viewBox="0 0 46 46" aria-hidden="true"><path d="M23 0V46M0 23H46M8 6Q20 23 8 40M38 6Q26 23 38 40" fill="none" stroke="#7c2d12" stroke-width="3" stroke-linecap="round"/></svg><i>＋</i></span>記錄</button>
+  <button data-tab-btn="cal"><span class="ic" aria-hidden="true">📅</span>日曆</button>
+  <button data-tab-btn="log"><span class="ic" aria-hidden="true">📝</span>日記本</button>
+</nav>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- 記錄對話框 -->
+<dialog id="entryDlg" aria-labelledby="entryTitle">
+  <form class="dlg" id="entryForm" method="dialog" autocomplete="off">
+    <div class="dlg-head"><h2 id="entryTitle">記錄今天</h2><button type="button" class="icon-btn" id="fClose" aria-label="關閉">✕</button></div>
+    <p class="sub">打開期貨 APP，找到「權益總值／權益數」，照抄進來就好。</p>
+    <div class="date-row">
+      <div class="date-chips" role="group" aria-label="快速選日期"><button type="button" data-day="today" aria-pressed="false">今天</button><button type="button" data-day="prev" aria-pressed="false">上個交易日</button></div>
+      <input type="date" id="fDate" required aria-label="日期">
+    </div>
+    <label class="field"><span>權益總值（元）<small id="fLastHint"></small></span><input class="huge" type="number" id="fEquity" inputmode="numeric" enterkeyhint="done" step="1" min="0" required placeholder="例如 101250"></label>
+    <div class="preview" id="fPreview">輸入權益總值後，這裡會算出今天的損益。</div>
+    <div class="field">
+      <span>今天有入金或出金嗎？</span>
+      <div class="flow-seg" role="group" aria-label="出入金">
+        <button type="button" data-flow="none" aria-pressed="true">沒有</button>
+        <button type="button" data-flow="in" aria-pressed="false">有入金</button>
+        <button type="button" data-flow="out" aria-pressed="false">有出金</button>
+      </div>
+      <input type="number" id="fFlow" class="hidden" inputmode="decimal" min="0" step="1" placeholder="金額（元）" aria-label="出入金金額">
+    </div>
+    <details class="more" id="fMore">
+      <summary>選填：手續費、口數、心得（有填漏水筒才會準）</summary>
+      <div class="row2">
+        <label class="field"><span>手續費＋期交稅 <small>元</small></span><input type="number" id="fCost" inputmode="decimal" min="0" step="1" placeholder="0"></label>
+        <label class="field"><span>今天交易口數 <small>口</small></span><input type="number" id="fLots" inputmode="numeric" min="0" step="1" placeholder="0"></label>
+      </div>
+      <label class="field"><span>一句話心得</span><textarea id="fNote" rows="2" maxlength="200" placeholder="例如：追高被巴、有照停損出場 👍"></textarea></label>
+    </details>
+    <p class="err" id="fErr"></p>
+    <div class="dlg-actions sticky">
+      <button type="button" class="btn danger hidden" id="fDelete">刪除這天</button>
+      <span class="sp"></span>
+      <button type="button" class="btn" id="fCancel">取消</button>
+      <button type="submit" class="btn primary" id="fSave">儲存</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- 設定對話框 -->
+<dialog id="setDlg" aria-labelledby="setTitle">
+  <form class="dlg" id="setForm" method="dialog" autocomplete="off">
+    <h2 id="setTitle">設定與備份</h2>
+    <p class="sub">資料存在這台裝置的瀏覽器裡，記得每週匯出備份一次。</p>
+    <p class="sub sync-line hidden" id="sSync"></p>
+    <div class="code-box hidden" id="codeBox">
+      <div class="field" id="codeOff"><span>☁️ 雲端同步碼 <small>貼上一次就好，之後每次儲存都會自動備份到雲端</small></span>
+        <div class="code-row"><input id="sCode" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go" placeholder="貼上同步碼" aria-label="雲端同步碼"><button type="button" class="btn primary" id="bCode">連線</button></div></div>
+      <div class="code-on hidden" id="codeOn"><span id="codeOnText">☁️ 雲端同步已開啟</span><button type="button" class="btn small" id="bCopyCode">📋 複製同步碼</button><button type="button" class="btn small danger" id="bUnlink">中斷同步</button></div>
+      <p class="err" id="codeErr"></p>
+    </div>
+    <div class="row2">
+      <label class="field"><span>暱稱</span><input id="sName" maxlength="20" placeholder="例如 小明"></label>
+      <label class="field"><span>初始本金（元）</span><input type="number" id="sCapital" inputmode="decimal" min="1" step="1" required></label>
+    </div>
+    <p class="err" id="sErr"></p>
+    <div class="dlg-actions" style="margin-bottom:16px"><span class="sp"></span><button type="submit" class="btn primary">儲存設定</button></div>
+    <div class="set-list">
+      <button type="button" class="btn" id="bExport">💾 匯出備份檔（換手機也能還原）</button>
+      <button type="button" class="btn" id="bCsv">📄 匯出成 Excel 表格</button>
+      <button type="button" class="btn" id="bImport">📥 從備份檔還原</button>
+      <input type="file" id="importFile" accept=".json,application/json" class="hidden">
+      <button type="button" class="btn danger" id="bWipe">🗑️ 清除全部資料</button>
+    </div>
+    <div class="dlg-actions" style="margin-top:16px"><button type="button" class="btn" id="sClose">關閉</button></div>
+  </form>
+</dialog>
+
+<script>
+(() => {
+'use strict';
+// 同一個網域（curtis1565-del.github.io）底下還有別本日記，存的東西一律用 trade-diary. 開頭，才不會互相蓋掉
+const KEY = 'trade-diary.v1';
+const BENCH_KEY = 'trade-diary.bench.v1';
+const THEME_KEY = 'trade-diary.theme';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* ---------- storage ---------- */
+let storageOk = true;
+function load(key, fallback) {
+  try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch (e) { storageOk = false; return fallback; }
+}
+function save(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); return true; } catch (e) { storageOk = false; return false; }
+}
+const CAPITAL0 = 100000;    // 預設本金 10 萬
+const defaultState = () => ({ settings: { name: '宋睿洋', capital: CAPITAL0 }, records: [], lastBackup: null });
+let state = Object.assign(defaultState(), load(KEY, {}));
+state.settings = Object.assign(defaultState().settings, state.settings || {});
+state.records = Array.isArray(state.records) ? state.records : [];
+let bench = Object.assign({ closes: {}, months: {} }, load(BENCH_KEY, {}));
+let demo = null;            // 範例資料只放記憶體，不會存起來
+/* ---------- 雲端同步（Google Apps Script） ---------- */
+const SYNC_URL = 'https://script.google.com/macros/s/AKfycby-KlTWRnhQ8z4AZ0a69aXmN6v3SyjbPAc2E_tJY_K8cAu7n27cmL7DeYSjwHLID93c/exec'; // Apps Script「做單日記同步（宋睿洋）」（沒有鑰匙會被拒絕）
+const SYNC_KEY_STORE = 'trade-diary.sync';
+const qs = new URLSearchParams(location.search);
+const viewKey = qs.get('view');   // 觀看連結：唯讀
+let writeKey = viewKey ? null : qs.get('k');
+if (!viewKey) { if (writeKey) save(SYNC_KEY_STORE, writeKey); else writeKey = load(SYNC_KEY_STORE, null); }
+let remote = null;          // 觀看模式的資料（只在記憶體）
+let syncState = 'off', lastSyncAt = null, syncError = null;
+if (viewKey) { state = defaultState(); document.documentElement.classList.add('view-mode'); }
+let benchStatus = 'idle';   // idle | loading | ok | fail
+const persist = () => { if (viewKey) return; state.updatedAt = new Date().toISOString(); save(KEY, state); schedulePush(); };
+const view = () => remote || demo || state;
+let pushT = null;
+function schedulePush() { if (!SYNC_URL || !writeKey) return; clearTimeout(pushT); pushT = setTimeout(pushCloud, 400); }
+async function pushCloud() {
+  syncState = 'syncing'; renderSync();
+  try {
+    const res = await fetch(`${SYNC_URL}?key=${encodeURIComponent(writeKey)}`, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ settings: state.settings, records: state.records, updatedAt: state.updatedAt }) });
+    const j = await res.json(); if (!j.ok) throw new Error(j.error);
+    syncState = 'ok'; lastSyncAt = new Date();
+  } catch (e) {
+    syncState = 'fail'; clearTimeout(pushT);
+    if (e.message === 'readonly' || e.message === 'key') syncError = e.message; else pushT = setTimeout(pushCloud, 60000);
+  }
+  renderSync();
+}
+async function pullCloud(key) {
+  const res = await fetch(`${SYNC_URL}?key=${encodeURIComponent(key)}&t=${Date.now()}`);
+  const j = await res.json(); if (!j.ok) throw new Error(j.error); return j;
+}
+async function refreshRemote() {
+  syncState = 'syncing'; renderSync();
+  try {
+    const j = await pullCloud(viewKey);
+    const next = { settings: Object.assign(defaultState().settings, j.settings || {}), records: j.records || [], updatedAt: j.updatedAt, lastBackup: Date.now() };
+    const changed = !remote || JSON.stringify([next.settings, next.records]) !== JSON.stringify([remote.settings, remote.records]);
+    remote = next; syncState = 'ok'; lastSyncAt = new Date();
+    if (changed) { render(); syncBench(); } else render();
+  } catch (e) { syncState = 'fail'; render(); }
+}
+async function initSync() {
+  if (!SYNC_URL) { if (viewKey) { syncState = 'fail'; render(); } return; }
+  if (viewKey) {
+    await refreshRemote();
+    setInterval(() => { if (document.visibilityState === 'visible') refreshRemote(); }, 3 * 60 * 1000);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') refreshRemote(); });
+    return;
+  }
+  if (!writeKey) return;
+  syncState = 'syncing'; renderSync();
+  try {
+    const j = await pullCloud(writeKey);
+    const cloud = j.records || [];
+    const cloudNewer = cloud.length && (!state.records.length || (j.updatedAt && state.updatedAt ? j.updatedAt > state.updatedAt : cloud.length > state.records.length));
+    if (cloudNewer) {
+      const restored = !state.records.length;
+      state.settings = Object.assign(defaultState().settings, j.settings || {}); state.records = cloud; state.updatedAt = j.updatedAt;
+      save(KEY, state); syncState = 'ok'; lastSyncAt = new Date(); calMonth = null; render(); syncBench();
+      if (restored) toast(`☁️ 已從雲端還原 ${cloud.length} 天紀錄`);
+    } else if (state.records.length && JSON.stringify(cloud) !== JSON.stringify(state.records)) {
+      if (!state.updatedAt) state.updatedAt = new Date().toISOString();
+      await pushCloud();
+    } else { syncState = 'ok'; lastSyncAt = new Date(); }
+  } catch (e) { syncState = 'fail'; }
+  renderSync();
+}
+const hm = d => `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+function fmtUpdated(iso) { if (!iso) return '—'; const d = new Date(iso); return isNaN(d) ? '—' : `${d.getMonth() + 1}/${d.getDate()} ${hm(d)}`; }
+function renderCodeBox() {
+  const box = $('#codeBox'); if (!box) return;
+  box.classList.toggle('hidden', !SYNC_URL || !!viewKey);
+  $('#codeOff').classList.toggle('hidden', !!writeKey);
+  $('#codeOn').classList.toggle('hidden', !writeKey);
+}
+async function connectCode() {
+  const code = $('#sCode').value.replace(/\s+/g, ''), err = $('#codeErr'), btn = $('#bCode');
+  err.textContent = '';
+  if (!code) { err.textContent = '請貼上同步碼'; return; }
+  if (code[0] === 'v') { err.textContent = '這是「觀看碼」，只能看不能記。請貼上寫入用的同步碼。'; return; }
+  btn.disabled = true; btn.textContent = '連線中…';
+  try {
+    await pullCloud(code);
+    writeKey = code; syncError = null; save(SYNC_KEY_STORE, code); $('#sCode').value = '';
+    await initSync(); renderCodeBox(); toast('☁️ 雲端同步已開啟');
+  } catch (e) { err.textContent = e.message === 'key' ? '同步碼不對，請確認有完整貼上' : '連不上雲端，請確認網路後再試'; }
+  finally { btn.disabled = false; btn.textContent = '連線'; }
+}
+async function copyCode() {
+  if (!writeKey) return;
+  try { await navigator.clipboard.writeText(writeKey); }
+  catch (e) { const t = document.createElement('textarea'); t.value = writeKey; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+  toast('📋 同步碼已複製');
+}
+function renderSync() {
+  renderCodeBox();
+  const b = $('#syncBadge'), line = $('#sSync');
+  if (!b) return;
+  if (viewKey) { b.className = 'sync-badge view'; b.textContent = syncState === 'syncing' ? '👀 讀取中…' : '👀 觀看模式'; return; }
+  const on = !!(SYNC_URL && writeKey);
+  b.classList.toggle('hidden', !on); line.classList.toggle('hidden', !on);
+  if (!on) return;
+  b.className = 'sync-badge' + (syncState === 'syncing' ? ' syncing' : syncState === 'fail' ? ' fail' : '');
+  b.textContent = syncState === 'syncing' ? '☁️ 同步中…' : syncState === 'fail' ? '⚠️ 未同步' : '☁️ 已同步';
+  b.title = syncState === 'fail' ? '暫時連不上雲端，資料已存在手機，等一下會自動再試' : lastSyncAt ? `最後同步 ${hm(lastSyncAt)}` : '';
+  line.textContent = syncError ? '⚠️ 這個同步碼不能寫入（可能貼到觀看碼），請中斷後重新貼上同步碼。' : syncState === 'fail' ? '⚠️ 雲端同步：暫時連不上，資料已存在手機，會自動重試。' : `☁️ 雲端同步：已開啟${lastSyncAt ? `（最後同步 ${hm(lastSyncAt)}）` : ''}，每次儲存都會自動備份到雲端。`;
+}
+
+/* ---------- formatting ---------- */
+const nf0 = new Intl.NumberFormat('zh-TW', { maximumFractionDigits: 0 });
+const money = v => v == null || !isFinite(v) ? '—' : nf0.format(Math.round(v) || 0);
+const sMoney = v => v == null || !isFinite(v) ? '—' : (v > 0 ? '+' : v < 0 ? '−' : '') + nf0.format(Math.abs(Math.round(v)));
+const pct = (v, d = 2) => v == null || !isFinite(v) ? '—' : (v * 100).toFixed(d) + '%';
+const sPct = (v, d = 2) => { if (v == null || !isFinite(v)) return '—'; const t = Math.abs(v * 100).toFixed(d); return (+t === 0 ? '' : v > 0 ? '+' : '−') + t + '%'; };
+const arrow = v => v > 0 ? '▲' : v < 0 ? '▼' : '';
+const tone = v => v == null || !isFinite(v) ? 'flat' : v > 0 ? 'up' : v < 0 ? 'down' : 'flat';
+const compact = v => {
+  const a = Math.abs(v), s = v > 0 ? '+' : v < 0 ? '−' : '';
+  return a >= 10000 ? s + (a / 10000).toFixed(a >= 100000 ? 0 : 1) + '萬' : s + nf0.format(Math.round(a));
+};
+const ratio = v => v == null || !isFinite(v) ? '—' : v.toFixed(2);
+const pad = n => String(n).padStart(2, '0');
+const isoOf = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const md = iso => `${+iso.slice(5, 7)}/${+iso.slice(8, 10)}`;
+const WEEK = ['日', '一', '二', '三', '四', '五', '六'];
+const wd = iso => WEEK[new Date(iso + 'T00:00').getDay()];
+const todayIso = () => isoOf(new Date());
+
+/* ---------- core math ---------- */
+function compute(st) {
+  const capital = Number(st.settings.capital) || 0;
+  const recs = st.records.slice().sort((a, b) => a.date.localeCompare(b.date));
+  const closes = bench.closes;
+  const benchDates = Object.keys(closes).sort();
+  const closeOn = iso => { // 該日（含）以前最近一個收盤
+    let lo = 0, hi = benchDates.length - 1, ans = null;
+    while (lo <= hi) { const m = (lo + hi) >> 1; if (benchDates[m] <= iso) { ans = benchDates[m]; lo = m + 1; } else hi = m - 1; }
+    return ans ? { date: ans, close: closes[ans] } : null;
+  };
+  const closeBefore = iso => {
+    let ans = null; for (let i = benchDates.length - 1; i >= 0; i--) if (benchDates[i] < iso) { ans = benchDates[i]; break; }
+    return ans ? { date: ans, close: closes[ans] } : null;
+  };
+  const benchBase = recs.length ? closeBefore(recs[0].date) : null;
+  let prevEq = capital, idx = 1, peakIdx = 1, cumPnl = 0, peakPnl = 0, cumFlow = 0;
+  let bIdxPeak = 1, prevBench = benchBase;
+  const rows = recs.map(r => {
+    const flow = Number(r.flow) || 0;
+    const base = prevEq + flow;
+    const pnl = r.equity - prevEq - flow;
+    const ret = base > 0 ? pnl / base : 0;
+    idx *= 1 + ret; peakIdx = Math.max(peakIdx, idx);
+    cumPnl += pnl; peakPnl = Math.max(peakPnl, cumPnl); cumFlow += flow;
+    const cost = Number(r.cost) || 0;
+    let bClose = null, bCum = null, bRet = null, bDd = null;
+    const bc = closeOn(r.date);
+    if (benchBase && bc && bc.date >= benchBase.date) {
+      bClose = bc.close; bCum = bc.close / benchBase.close - 1;
+      const bi = 1 + bCum; bIdxPeak = Math.max(bIdxPeak, bi); bDd = bi / bIdxPeak - 1;
+      bRet = prevBench ? bc.close / prevBench.close - 1 : null; prevBench = bc;
+    }
+    const row = {
+      date: r.date, equity: r.equity, flow, pnl, ret, cost, gross: pnl + cost, lots: Number(r.lots) || 0, note: r.note || '',
+      cum: idx - 1, dd: idx / peakIdx - 1, cumPnl, ddMoney: cumPnl - peakPnl, cumFlow,
+      bClose, bCum, bRet, bDd, benchDate: bc ? bc.date : null
+    };
+    prevEq = r.equity;
+    return row;
+  });
+  // summary
+  const wins = rows.filter(r => r.pnl > 0), losses = rows.filter(r => r.pnl < 0), flats = rows.filter(r => r.pnl === 0);
+  const totalProfit = wins.reduce((s, r) => s + r.pnl, 0), totalLoss = losses.reduce((s, r) => s + r.pnl, 0);
+  const decided = wins.length + losses.length;
+  const avgWin = wins.length ? totalProfit / wins.length : null, avgLoss = losses.length ? totalLoss / losses.length : null;
+  const last = rows[rows.length - 1] || null;
+  let maxDd = 0, maxDdMoney = 0, maxDdDate = null;
+  rows.forEach(r => { if (r.dd < maxDd) { maxDd = r.dd; maxDdDate = r.date; } if (r.ddMoney < maxDdMoney) maxDdMoney = r.ddMoney; });
+  let best = null, worst = null;
+  rows.forEach(r => { if (!best || r.pnl > best.pnl) best = r; if (!worst || r.pnl < worst.pnl) worst = r; });
+  // streaks
+  let curKind = 0, cur = 0, maxW = 0, maxL = 0, run = 0, runKind = 0;
+  rows.forEach(r => {
+    const k = Math.sign(r.pnl);
+    if (k === 0) { run = 0; runKind = 0; return; }
+    if (k === runKind) run++; else { run = 1; runKind = k; }
+    if (k > 0) maxW = Math.max(maxW, run); else maxL = Math.max(maxL, run);
+  });
+  curKind = runKind; cur = run;
+  // highs
+  let newHighs = 0, hi = capital; rows.forEach(r => { if (r.dd === 0 && r.pnl > 0) newHighs++; });
+  const totalCost = rows.reduce((s, r) => s + r.cost, 0), totalLots = rows.reduce((s, r) => s + r.lots, 0);
+  const deposits = rows.reduce((s, r) => s + Math.max(0, r.flow), 0), withdrawals = rows.reduce((s, r) => s + Math.min(0, r.flow), 0);
+  const netPnl = last ? last.cumPnl : 0;
+  const grossPnl = netPnl + totalCost;
+  const vol = (() => { if (rows.length < 2) return null; const m = rows.reduce((s, r) => s + r.ret, 0) / rows.length; return Math.sqrt(rows.reduce((s, r) => s + (r.ret - m) ** 2, 0) / (rows.length - 1)); })();
+  return {
+    capital, rows, last, benchBase,
+    s: {
+      days: rows.length, winDays: wins.length, lossDays: losses.length, flatDays: flats.length,
+      winRate: decided ? wins.length / decided : null, totalProfit, totalLoss,
+      profitFactor: totalLoss < 0 ? totalProfit / -totalLoss : (totalProfit > 0 ? Infinity : null),
+      avgWin, avgLoss, payoff: avgWin != null && avgLoss != null ? avgWin / -avgLoss : null,
+      avgDaily: rows.length ? netPnl / rows.length : null, netPnl, grossPnl, cum: last ? last.cum : 0,
+      benchCum: last ? last.bCum : null, maxDd, maxDdMoney, maxDdDate, curDd: last ? last.dd : 0, curDdMoney: last ? last.ddMoney : 0,
+      retOverDd: maxDd < 0 && last ? last.cum / -maxDd : null, best, worst, curKind, cur, maxW, maxL, newHighs,
+      totalCost, totalLots, costPerLot: totalLots ? totalCost / totalLots : null, deposits, withdrawals, vol,
+      costShare: grossPnl > 0 ? totalCost / grossPnl : null, costOfCapital: capital ? totalCost / capital : null
+    }
+  };
+}
+
+/* ---------- 大盤（證交所加權指數，自動抓） ---------- */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+async function syncBench() {
+  const recs = view().records;
+  if (!recs.length) return;
+  const first = recs.map(r => r.date).sort()[0];
+  const start = new Date(first + 'T00:00'); start.setDate(start.getDate() - 20);
+  const end = new Date();
+  const curYm = `${end.getFullYear()}${pad(end.getMonth() + 1)}`;
+  const months = [];
+  for (let d = new Date(start.getFullYear(), start.getMonth(), 1); d <= end; d.setMonth(d.getMonth() + 1)) months.push(`${d.getFullYear()}${pad(d.getMonth() + 1)}`);
+  const todo = months.filter(ym => {
+    const m = bench.months[ym];
+    if (!m) return true;
+    if (ym < curYm && m.final) return false;
+    return Date.now() - (m.at || 0) > 20 * 60 * 1000;
+  });
+  if (!todo.length) { benchStatus = 'ok'; return; }
+  benchStatus = 'loading'; renderBenchNote();
+  let changed = false, failed = false;
+  for (const ym of todo) {
+    try {
+      const res = await fetch(`https://www.twse.com.tw/rwd/zh/afterTrading/FMTQIK?date=${ym}01&response=json`, { cache: 'no-store' });
+      const j = await res.json();
+      if (j.stat === 'OK' && Array.isArray(j.data)) {
+        j.data.forEach(row => {
+          const [y, m, d] = String(row[0]).split('/');
+          const close = parseFloat(String(row[4]).replace(/,/g, ''));
+          if (isFinite(close)) bench.closes[`${+y + 1911}-${pad(m)}-${pad(d)}`] = close;
+        });
+      }
+      bench.months[ym] = { at: Date.now(), final: ym < curYm };
+      changed = true;
+    } catch (e) { failed = true; }
+    await sleep(350);
+  }
+  benchStatus = failed && !Object.keys(bench.closes).length ? 'fail' : (failed ? 'partial' : 'ok');
+  if (changed) { save(BENCH_KEY, bench); render(); } else renderBenchNote();
+}
+
+/* ---------- charts（手刻 SVG，含滑鼠/手指十字線） ---------- */
+function niceTicks(min, max, n = 4) {
+  if (!isFinite(min) || !isFinite(max)) { min = 0; max = 1; }
+  if (min === max) { const p = Math.abs(min) * 0.05 || 1; min -= p; max += p; }
+  const step0 = (max - min) / n, mag = 10 ** Math.floor(Math.log10(step0)), e = step0 / mag;
+  const step = (e >= 7.5 ? 10 : e >= 3.5 ? 5 : e >= 1.5 ? 2 : 1) * mag;
+  const lo = Math.floor(min / step) * step, hi = Math.ceil(max / step) * step, ticks = [];
+  for (let v = lo; v <= hi + step / 2; v += step) ticks.push(+v.toFixed(10));
+  return { lo, hi, ticks };
+}
+function xLabelIdx(n, w) {
+  const want = Math.max(2, Math.min(n, Math.floor(w / 70)));
+  if (n <= want) return [...Array(n).keys()];
+  const out = new Set([0, n - 1]);
+  for (let k = 1; k < want - 1; k++) out.add(Math.round(k * (n - 1) / (want - 1)));
+  return [...out].sort((a, b) => a - b);
+}
+/**
+ * o = { labels:[iso|'起點'], series:[{name,color,values,dashed,area}], bars:{values,colorOf}, fmt, height, zero, refs:[{v,label}], tip:(i)=>html, aria }
+ */
+let gradSeq = 0;
+function chart(host, o) {
+  host.innerHTML = '';
+  const W = Math.max(260, host.clientWidth || 600), H = o.height || 220;
+  const fmt = o.fmt || money;
+  const vals = [];
+  (o.series || []).forEach(s => s.values.forEach(v => v != null && isFinite(v) && vals.push(v)));
+  if (o.bars) o.bars.values.forEach(v => v != null && isFinite(v) && vals.push(v));
+  (o.refs || []).forEach(r => vals.push(r.v));
+  if (o.zero || o.bars) vals.push(0);
+  let min = Math.min(...vals), max = Math.max(...vals);
+  const { lo, hi, ticks } = niceTicks(min, max, H < 200 ? 3 : 4);
+  const labelW = Math.max(...ticks.map(t => fmt(t).length)) * 6.6 + 10;
+  const padL = Math.max(40, labelW), padR = 14, padT = 10, padB = 24;
+  const n = o.labels.length, iw = W - padL - padR, ih = H - padT - padB;
+  const band = o.bars ? iw / n : 0;
+  const x = i => o.bars ? padL + band * (i + 0.5) : padL + (n === 1 ? iw / 2 : i * iw / (n - 1));
+  const y = v => padT + (hi - v) / (hi - lo || 1) * ih;
+  let g = '';
+  ticks.forEach(t => { g += `<line class="gridl" x1="${padL}" x2="${W - padR}" y1="${y(t)}" y2="${y(t)}"/><text class="axis" x="${padL - 6}" y="${y(t) + 4}" text-anchor="end">${esc(fmt(t))}</text>`; });
+  if (lo < 0 && hi > 0) g += `<line class="zerol" x1="${padL}" x2="${W - padR}" y1="${y(0)}" y2="${y(0)}"/>`;
+  (o.refs || []).forEach(r => { g += `<line class="refl" x1="${padL}" x2="${W - padR}" y1="${y(r.v)}" y2="${y(r.v)}"/><text class="reft" x="${W - padR}" y="${y(r.v) - 5}" text-anchor="end">${esc(r.label)}</text>`; });
+  xLabelIdx(n, iw).forEach(i => {
+    const l = o.labels[i]; const t = l.length === 10 ? md(l) : l;
+    const anchor = o.bars ? 'middle' : i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle';
+    g += `<text class="axis" x="${x(i)}" y="${H - 6}" text-anchor="${anchor}">${esc(t)}</text>`;
+  });
+  if (o.bars) {
+    const bw = Math.max(2, Math.min(22, band * 0.68)), r = Math.min(4, bw / 2), base = y(Math.max(lo, Math.min(0, hi)));
+    o.bars.values.forEach((v, i) => {
+      if (v == null || !isFinite(v) || v === 0) return;
+      const x0 = x(i) - bw / 2, yv = y(v), h = Math.abs(yv - base);
+      const rr = Math.min(r, h);
+      const d = v > 0
+        ? `M${x0},${base}V${yv + rr}Q${x0},${yv} ${x0 + rr},${yv}H${x0 + bw - rr}Q${x0 + bw},${yv} ${x0 + bw},${yv + rr}V${base}Z`
+        : `M${x0},${base}V${yv - rr}Q${x0},${yv} ${x0 + rr},${yv}H${x0 + bw - rr}Q${x0 + bw},${yv} ${x0 + bw},${yv - rr}V${base}Z`;
+      g += `<path d="${d}" fill="${o.bars.colorOf(v)}"/>`;
+    });
+  }
+  (o.series || []).forEach(s => {
+    let d = '', pen = false; const pts = [];
+    s.values.forEach((v, i) => {
+      if (v == null || !isFinite(v)) { pen = false; return; }
+      d += (pen ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(v).toFixed(1); pen = true; pts.push(i);
+    });
+    if (s.area && pts.length > 1) {
+      const by = y(Math.max(lo, Math.min(0, hi)));
+      const a = pts.map((i, k) => (k ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(s.values[i]).toFixed(1)).join('') + `L${x(pts[pts.length - 1])},${by}L${x(pts[0])},${by}Z`;
+      const gid = 'ag' + (++gradSeq), o1 = s.areaFlip ? 0 : 0.34, o2 = s.areaFlip ? 0.3 : 0;
+      g += `<defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s.color}" stop-opacity="${o1}"/><stop offset="1" stop-color="${s.color}" stop-opacity="${o2}"/></linearGradient></defs><path d="${a}" fill="url(#${gid})"/>`;
+    }
+    g += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"${s.dashed ? ' stroke-dasharray="6 4"' : ''}/>`;
+    if (s.dots) pts.forEach(i => { g += `<circle cx="${x(i)}" cy="${y(s.values[i])}" r="3" fill="${s.dotColor ? s.dotColor(s.values[i]) : s.color}" stroke="var(--card)" stroke-width="1.5"/>`; });
+    if (pts.length && !s.dashed) { const i = pts[pts.length - 1]; g += `<circle cx="${x(i)}" cy="${y(s.values[i])}" r="4" fill="${s.color}" stroke="var(--card)" stroke-width="2"/>`; }
+  });
+  g += `<g class="hover" style="display:none"><line class="hl" x1="0" x2="0" y1="${padT}" y2="${padT + ih}" stroke="var(--muted)" stroke-width="1"/>`;
+  (o.series || []).forEach((s, k) => { g += `<circle class="hd" data-k="${k}" r="5" fill="${s.color}" stroke="var(--card)" stroke-width="2"/>`; });
+  g += `</g><rect x="${padL}" y="0" width="${iw}" height="${H}" fill="transparent"/>`;
+  host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" tabindex="0" aria-label="${esc(o.aria || '')}">${g}</svg><div class="tip"></div>`;
+  const svg = host.querySelector('svg'), tip = host.querySelector('.tip'), hov = svg.querySelector('.hover'), hl = svg.querySelector('.hl');
+  let cur = -1;
+  const show = i => {
+    if (i < 0 || i >= n) return; cur = i;
+    hov.style.display = ''; const xi = x(i); hl.setAttribute('x1', xi); hl.setAttribute('x2', xi);
+    svg.querySelectorAll('.hd').forEach(c => { const v = o.series[+c.dataset.k].values[i]; if (v == null || !isFinite(v)) c.style.display = 'none'; else { c.style.display = ''; c.setAttribute('cx', xi); c.setAttribute('cy', y(v)); } });
+    tip.innerHTML = o.tip(i); tip.classList.add('show');
+    const scale = host.clientWidth / W, tw = tip.offsetWidth;
+    let left = xi * scale + 12; if (left + tw > host.clientWidth) left = xi * scale - tw - 12;
+    tip.style.left = Math.max(0, left) + 'px'; tip.style.top = '4px';
+  };
+  const hide = () => { hov.style.display = 'none'; tip.classList.remove('show'); };
+  const idxAt = ev => {
+    const rect = svg.getBoundingClientRect(), px = (ev.clientX - rect.left) / rect.width * W;
+    return o.bars ? Math.floor((px - padL) / band) : Math.round((px - padL) / (iw / Math.max(1, n - 1)));
+  };
+  svg.addEventListener('pointermove', ev => show(Math.max(0, Math.min(n - 1, idxAt(ev)))));
+  svg.addEventListener('pointerdown', ev => show(Math.max(0, Math.min(n - 1, idxAt(ev)))));
+  svg.addEventListener('pointerleave', ev => { if (ev.pointerType === 'mouse') hide(); });
+  svg.addEventListener('blur', hide);
+  svg.addEventListener('keydown', ev => {
+    if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') { ev.preventDefault(); show(cur < 0 ? n - 1 : Math.max(0, Math.min(n - 1, cur + (ev.key === 'ArrowRight' ? 1 : -1)))); }
+    if (ev.key === 'Escape') hide();
+  });
+}
+const tipHead = l => `<div class="t-date">${l.length === 10 ? `${l.replaceAll('-', '/')}（${wd(l)}）` : esc(l)}</div>`;
+const tipRow = (name, val, color, cls = '') => `<div class="t-row"><span>${color ? `<i class="sw" style="background:${color}"></i>` : ''}${esc(name)}</span><b class="${cls}">${val}</b></div>`;
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+
+/* ---------- render ---------- */
+let calMonth = null, dailyMode = 'money', showAllLog = false, openExplain = null;
+let curTab = 'home', curChart = 'equity';
+const sumOpen = new Set([0]);
+const CHARTS = [['equity', '權益曲線'], ['cum', '跟大盤比'], ['daily', '每日損益'], ['win', '勝率・賺賠比'], ['dd', '回撤'], ['cost', '漏水筒']];
+const mq = matchMedia('(max-width: 760px)');
+const isM = () => mq.matches;
+const EXPLAIN = {
+  netPnl: '扣掉入金、出金之後，你真正賺或賠的錢（已扣手續費與稅）。',
+  cum: '時間加權報酬率：不受中途入金出金影響，可以拿來跟大盤公平比較。',
+  pf: '總獲利 ÷ 總虧損。大於 1 代表整體是賺的；1.5 以上算健康。',
+  winRate: '賺錢的天數 ÷（賺錢＋賠錢的天數），持平日不算。勝率低不一定不好，要搭配賺賠比看。',
+  payoff: '平均賺的那天 ÷ 平均賠的那天。大於 1 代表「賺的時候賺得比賠的時候多」。',
+  expect: '平均每天的淨損益。長期是正的，代表你的方法有優勢。',
+  mdd: '從最高點往下掉最多的幅度。新手最該盯的數字，超過 20% 就該停下來檢討、減少口數。',
+  rdd: '累積報酬 ÷ 最大回撤。越高代表「賺同樣的錢，承受的痛苦越少」。',
+  vol: '每天報酬率的標準差，越大代表淨值上下晃得越兇。',
+  costShare: '手續費＋期交稅 ÷ 交易本身賺的錢（毛利）。超過 30% 代表交易可能太頻繁。'
+};
+function sumRow(k, v, cls = '', key = null) {
+  const q = key ? `<button class="q" data-explain="${key}" aria-label="說明：${esc(k)}" aria-expanded="${openExplain === key}">?</button>` : '';
+  return `<div class="sum-row"><span class="k">${esc(k)}${q}</span><span class="v ${cls}">${v}</span></div>` +
+    (key && openExplain === key ? `<p class="explain">${EXPLAIN[key]}</p>` : '');
+}
+
+function render() {
+  renderSync();
+  const st = view();
+  $('#brandName').textContent = st.settings.name ? `${st.settings.name}的做單日記` : '宋睿洋的做單日記';
+  document.title = st.settings.name ? `${st.settings.name}的做單日記` : '宋睿洋的做單日記';
+  const app = $('#app');
+  const has = st.records.length > 0;
+  document.body.classList.toggle('m', isM() && has);
+  document.body.dataset.tab = curTab;
+  $('#tabbar').classList.toggle('hidden', !has);
+  document.querySelectorAll('[data-tab-btn]').forEach(b => b.setAttribute('aria-current', b.dataset.tabBtn === curTab ? 'page' : 'false'));
+  if (!has) { app.innerHTML = bannersHtml() + (viewKey ? (remote ? `<section class="card onboard"><h2>還沒有任何紀錄</h2><p>等他記下第一天，這裡就會出現圖表。</p></section>` : '') : onboardHtml()); wire(); renderCat(null); return; }
+  const C = compute(st);
+  app.innerHTML = bannersHtml() + heroHtml(C) + summaryHtml(C) +
+    `<div class="chips" data-tab="charts" role="tablist" aria-label="選擇圖表">${CHARTS.map(([k, l]) => `<button role="tab" data-chart-btn="${k}" aria-selected="${curChart === k}">${l}</button>`).join('')}</div>` +
+    `<section class="card" id="sec-curve" data-tab="charts" data-chart="equity"><div class="card-head"><div><p class="eyebrow">📈 帳戶成長</p><h2>每日權益總值曲線</h2><p class="sub">你的帳戶每天值多少錢；虛線是投入的本金（含之後的入出金）。</p></div><div class="legend"><span><i style="border-color:var(--mine)"></i>權益總值</span><span><i class="dash" style="border-color:var(--muted)"></i>投入本金</span></div></div><div class="chart" id="cEquity"></div></section>` +
+    `<section class="card" id="sec-perf" data-tab="charts" data-chart="cum"><div class="card-head"><div><p class="eyebrow">🏀 跟大盤比賽</p><h2>累積報酬｜我的帳戶和大盤比一比</h2><p class="sub">同一天起跑，看誰跑得比較遠。大盤＝證交所加權指數（自動抓取）。</p></div><div class="legend"><span><i style="border-color:var(--mine)"></i>我的帳戶</span><span><i class="dash" style="border-color:var(--bench)"></i>大盤</span></div></div><div class="chart-stats" id="cumStats"></div><div class="chart" id="cCum"></div><p class="foot" id="benchNote"></p></section>` +
+    `<section class="card" data-tab="charts" data-chart="daily"><div class="card-head"><div><p class="eyebrow">📊 每天賺賠</p><h2>每日損益｜金額與百分比</h2><p class="sub">紅色往上＝賺，綠色往下＝賠。</p></div><div class="seg" role="group" aria-label="單位"><button data-daily="money" aria-pressed="${dailyMode === 'money'}">金額</button><button data-daily="pct" aria-pressed="${dailyMode === 'pct'}">百分比</button></div></div><div class="chart" id="cDaily"></div></section>` +
+    `<div class="grid2" data-tab="charts">` +
+      `<section class="card" data-chart="win"><div class="card-head"><div><p class="eyebrow">🎯 命中率</p><h2>勝率・賺賠比</h2><p class="sub">每日損益折線：每個點是一天。</p></div></div><div class="chart" id="cDailyLine"></div>${winRateHtml(C)}</section>` +
+      `<section class="card" data-chart="dd"><div class="card-head"><div><p class="eyebrow">🛡️ 防守檢查</p><h2>回撤比較</h2><p class="sub">離自己最高點掉了多少。越貼近 0 越好。</p></div><div class="legend"><span><i style="border-color:var(--mine)"></i>我的帳戶</span><span><i class="dash" style="border-color:var(--bench)"></i>大盤</span></div></div><div class="chart-stats" id="ddStats"></div><div class="chart" id="cDd"></div></section>` +
+    `</div>` +
+    `<section class="card" id="sec-calendar" data-tab="cal">${calendarHtml(C)}</section>` +
+    `<section class="card" id="sec-cost" data-tab="charts" data-chart="cost">${leakHtml(C)}</section>` +
+    logHtml(C);
+  app.querySelectorAll('[data-tab]').forEach(el => el.classList.toggle('tab-on', el.dataset.tab === curTab));
+  app.querySelectorAll('[data-chart]').forEach(el => el.classList.toggle('chart-on', el.dataset.chart === curChart));
+  drawCharts(C);
+  renderBenchNote();
+  wire();
+  countUp();
+  renderCat(C);
+}
+const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+let heroShown = null;
+function countUp() {
+  const el = document.getElementById('heroNum'); if (!el) return;
+  const to = Number(el.dataset.v), from = heroShown == null ? to * 0.8 : heroShown;
+  heroShown = to;
+  if (from === to || reduceMotion()) return;
+  const t0 = performance.now(), D = 900;
+  const step = t => { const k = Math.min(1, (t - t0) / D), e = 1 - Math.pow(1 - k, 3); el.textContent = money(from + (to - from) * e); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+function playIntro() { if (reduceMotion()) return; document.body.classList.remove('intro'); void document.body.offsetWidth; document.body.classList.add('intro'); clearTimeout(playIntro.t); playIntro.t = setTimeout(() => document.body.classList.remove('intro'), 900); }
+function confetti() { // 賺錢日：籃球、星星、「空心！」從天而降
+  if (reduceMotion()) return;
+  const glyphs = ['🏀', '⭐', '空心！', '🏀', '+3', '🎉', '🏀', '+2'], colors = ['#db2777', '#7c3aed', '#2563eb', '#f59e0b', '#ea580c', '#0e7490'];
+  for (let i = 0; i < 44; i++) {
+    const el = document.createElement('i'); el.className = 'confetti'; el.textContent = glyphs[i % glyphs.length];
+    Object.assign(el.style, { color: colors[i % colors.length], left: Math.random() * 100 + 'vw', fontSize: 16 + Math.random() * 14 + 'px' });
+    document.body.appendChild(el);
+    const dx = (Math.random() - 0.5) * 200, rot = (Math.random() - 0.5) * 300;
+    el.animate([{ transform: 'translate(0,-30px) rotate(0deg)', opacity: 1 }, { transform: `translate(${dx}px, ${innerHeight + 40}px) rotate(${rot}deg)`, opacity: 0.9 }],
+      { duration: 2000 + Math.random() * 1600, easing: 'cubic-bezier(.25,.6,.4,1)', delay: Math.random() * 400 }).onfinish = () => el.remove();
+  }
+  if (frameOn()) shoot(true); // 籃球貓順便投一個空心球
+}
+
+/* ---------- 籃球貓：球場上的貓會說話，點了會投籃 ---------- */
+const MAKE_LINES = ['空心！唰 🏀', '進了！照計畫出手，就是好球 🎯', '好球是等出來的，不是追出來的 🏀', '進了～記帳也要每天練習喔 📒', '漂亮！賺錢的時候更要守紀律 🛡️'];
+const MISS_LINES = ['打框了 😅 沒關係，下一球照樣出手', '沒進！就像停損，認了就好，繼續比賽 🏀', '差一點～深呼吸，照節奏再來一球'];
+const TIPS = ['停損就像犯規，該吹就要吹 ⏱️', '防守贏得冠軍：先守住本金 🛡️', '不追高、不亂投，等好球再出手 🏀', '連賠的時候先叫暫停，不要放大口數 ⏸️', '每天記一筆，就像每天練投籃 📒'];
+let actx = null, noiseBuf = null, sayT = null, catMsg = '', tapN = 0, shooting = false, streak = 0, lastC = null, boardShown = null;
+const pick = a => a[tapN % a.length];
+const frameOn = () => { const f = $('#pcFrame'); return !!(f && f.getBoundingClientRect().width); };
+function audio() { // iOS 背景回來可能是 interrupted，不只 suspended
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state !== 'running') actx.resume().catch(() => {}); return actx; } catch (e) { return null; }
+}
+function osc(f0, f1, dur, type = 'sine', vol = 0.15, at = 0) { // 單音（可滑音），收尾淡出不會喀一聲
+  const ac = audio(); if (!ac) return;
+  const t = ac.currentTime + at, o = ac.createOscillator(), g = ac.createGain();
+  o.type = type; o.frequency.setValueAtTime(f0, t); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur + 0.05);
+}
+function noise(dur, { type = 'bandpass', f0 = 2000, f1 = f0, q = 1, vol = 0.2, at = 0 } = {}) { // 濾波雜音：唰、拍手、煙火
+  const ac = audio(); if (!ac) return;
+  if (!noiseBuf) { noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; }
+  const t = ac.currentTime + at, s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+  s.buffer = noiseBuf; f.type = type; f.Q.value = q; f.frequency.setValueAtTime(f0, t); if (f1 !== f0) f.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  s.connect(f); f.connect(g); g.connect(ac.destination); s.start(t); s.stop(t + dur + 0.05);
+}
+const sfx = {
+  bounce: (at = 0) => { osc(150, 55, 0.18, 'sine', 0.4, at); noise(0.05, { type: 'lowpass', f0: 900, f1: 300, vol: 0.25, at }); },
+  swish: () => noise(0.42, { f0: 1600, f1: 6000, q: 0.9, vol: 0.25 }),
+  rim: () => { osc(560, 500, 0.5, 'triangle', 0.12); osc(840, 790, 0.4, 'triangle', 0.08); },
+  buzzer: () => { osc(196, 196, 0.7, 'sawtooth', 0.05); osc(208, 208, 0.7, 'sawtooth', 0.04); },
+  whistle: () => [0, 0.22].forEach(at => { osc(2900, 3100, 0.16, 'sine', 0.08, at); osc(3000, 2800, 0.16, 'square', 0.015, at); }),
+  ring: () => [0, 0.13, 0.26].forEach((at, i) => osc(i % 2 ? 2637 : 2093, i % 2 ? 2637 : 2093, 0.3, 'sine', 0.08, at)),
+  clunk: () => { osc(120, 60, 0.22, 'sine', 0.35); noise(0.09, { type: 'lowpass', f0: 700, f1: 200, vol: 0.25, at: 0.03 }); osc(1320, 1320, 0.25, 'sine', 0.05, 0.3); },
+  pop: () => { noise(0.3, { type: 'lowpass', f0: 3200, f1: 250, vol: 0.22 }); osc(320, 70, 0.22, 'sine', 0.16); },
+  clap: () => [0, 0.17, 0.34, 0.5].forEach(at => noise(0.07, { f0: 1500, f1: 1100, q: 0.7, vol: 0.35, at })),
+};
+function catLine(C) {
+  const st = view(), name = st.settings.name || '宋睿洋', now = new Date();
+  if (demo) return ['calm', '這是範例資料～看完按下面的「清除範例」，就能開始記自己的 🏀'];
+  if (viewKey && !remote) return syncState === 'fail' ? ['calm', SYNC_URL ? '讀不到雲端資料 📡 我會自動再試，也可以等一下按「重新整理」。' : '雲端還沒設定好 📡 請他確認一下觀看連結。'] : ['calm', '等我一下，正在讀雲端資料 ☁️'];
+  if (!C) return viewKey ? ['calm', `${name}還沒開始記錄，我在球場邊運球等他 🏀`] : ['calm', `嗨！我是籃球貓 🏀 從 ${money(st.settings.capital)} 元開始，每晚 10 點陪你記一筆。`];
+  const L = C.last, last = `${md(L.date)}（${wd(L.date)}）`, hr = now.getHours();
+  if (L.date !== todayIso()) {
+    if (now.getDay() % 6 === 0) return L.date < prevTradingDay()
+      ? ['calm', viewKey ? `${name}週五還沒記到，最後一筆是 ${last}。` : '週五還沒記到喔～按「記錄」→「上個交易日」補一筆 🏀']
+      : ['calm', `週末休兵，好好休息～上一筆 ${md(L.date)} ${sMoney(L.pnl)} 元。`];
+    if (viewKey) return ['calm', hr < 22 ? `${name}通常晚上 10 點記錄，最後一筆是 ${last}。` : `${name}今天還沒記錄，最後一筆是 ${last}。`];
+    return hr >= 22 ? ['calm', '⏰ 該記錄囉！打開期貨 APP，抄下「權益總值」就好。'] : hr >= 21 ? ['calm', '快 10 點囉～準備打開期貨 APP 抄「權益總值」⏰'] : ['calm', '今天還沒記錄～晚上 10 點記得來球場找我 🏀'];
+  }
+  if (L.pnl > 0) return ['up', `今天 ${sMoney(L.pnl)} 元！進球了 🏀 贏球的日子更要守紀律。`];
+  if (L.pnl < 0) return ['down', `今天 ${sMoney(L.pnl)} 元。有照停損就是好防守 🛡️ 寫一句心得，下個交易日再上場。`];
+  return ['calm', '今天打平，休息也是一種戰術 ⏸️'];
+}
+function renderCat(C) {
+  const [mood, text] = catLine(C);
+  lastC = C;
+  document.querySelectorAll('.bcat').forEach(s => s.setAttribute('data-mood', mood));
+  catMsg = text; if (!sayT) $('#catText').textContent = text;
+  board(C);
+  placeSay();
+}
+function board(C) { // 記分板：賺錢的日子＝勝、賠錢的日子＝敗
+  const w = $('#sb-w'), l = $('#sb-l'); if (!w || !l) return;
+  const vw = C ? C.s.winDays : 0, vl = C ? C.s.lossDays : 0, key = vw + ':' + vl;
+  [[w, vw], [l, vl]].forEach(([el, v]) => { el.textContent = String(v); el.setAttribute('font-size', String(v).length > 3 ? 32 : 44); });
+  if (boardShown != null && boardShown !== key && !reduceMotion()) [w, l].forEach(el => { el.classList.remove('flip'); void el.getBoundingClientRect(); el.classList.add('flip'); });
+  boardShown = key;
+}
+function say(text, ms = 4600) { // 明信片收起來時（其他分頁）改用提示框
+  if (!frameOn()) { toast('🏀 ' + text); return; }
+  $('#catText').textContent = text;
+  clearTimeout(sayT); sayT = setTimeout(() => { sayT = null; $('#catText').textContent = catMsg; }, ms);
+}
+function placeSay() { // 泡泡的尖角對準貓
+  const f = $('#pcFrame'), c = $('#sceneCat'); if (!f || !c) return;
+  const a = f.getBoundingClientRect(), b = c.getBoundingClientRect(); if (!a.width) return;
+  $('#catSay').style.setProperty('--say-x', Math.min(92, Math.max(8, (b.left + b.width / 2 - a.left) / a.width * 100)).toFixed(1) + '%');
+}
+function popFrom(el, text, bg) { // 從某個東西上面冒出「+2」之類的小標籤
+  const f = $('#pcFrame'); if (!f || !el || reduceMotion()) return;
+  const a = f.getBoundingClientRect(), b = el.getBoundingClientRect(); if (!a.width || !b.width) return;
+  const s = document.createElement('span'); s.className = 'fx-pop'; s.textContent = text;
+  Object.assign(s.style, { left: b.left - a.left + b.width / 2 + 'px', top: Math.max(4, b.top - a.top - 8) + 'px' });
+  if (bg) s.style.setProperty('--bg-pop', bg);
+  f.appendChild(s); setTimeout(() => s.remove(), 1200);
+}
+function bump(el, cls, ms) { if (!el || reduceMotion()) return; el.classList.remove(cls); void el.getBoundingClientRect(); el.classList.add(cls); setTimeout(() => el.classList.remove(cls), ms); }
+function fly(ball, pts, ms, spin, done) { // 沿著拋物線移動飛行球（場景座標，直接改 transform 屬性）
+  const [x0, y0, x1, y1, h] = pts, t0 = performance.now();
+  const step = now => {
+    const k = Math.min(1, (now - t0) / ms), x = x0 + (x1 - x0) * k, y = y0 + (y1 - y0) * k - 4 * h * k * (1 - k);
+    ball.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${(spin * k).toFixed(0)})`);
+    if (k < 1) requestAnimationFrame(step); else done();
+  };
+  requestAnimationFrame(step);
+}
+function shoot(sure) { // 點貓：投籃（大約八成會進）；連進會計數
+  const ball = $('#sc-shot'), hoop = $('#sc-hoop'), slot = $('#cat-slot'), cat = $('#sceneCat');
+  if (shooting || !ball || !hoop || !slot || !cat) return;
+  shooting = true; tapN++;
+  const make = sure || Math.random() < 0.8, rx = Number(hoop.dataset.rimX) || 330, ry = Number(hoop.dataset.rimY) || 228;
+  const m = /translate\(\s*([\d.]+)[ ,]+([\d.]+)/.exec(slot.getAttribute('transform') || '') || [0, 520, 228];
+  const x0 = Number(m[1]) + 124, y0 = Number(m[2]) + 92; // 貓右手上方
+  const end = line => {
+    ball.setAttribute('opacity', '0'); ball.removeAttribute('transform'); cat.classList.remove('shooting'); shooting = false;
+    say(line);
+  };
+  const madeLine = () => (streak >= 3 ? `連進 ${streak} 球！手感正燙 🔥 但口數不要跟著加。` : pick(MAKE_LINES));
+  bump(slot, 'hop', 520); cat.classList.add('shooting'); sfx.bounce();
+  if (reduceMotion()) { streak = make ? streak + 1 : 0; make ? sfx.swish() : sfx.rim(); end(make ? madeLine() : pick(MISS_LINES)); return; }
+  ball.setAttribute('opacity', '1');
+  const net = $('svg.scene .sc-net');
+  if (make) {
+    fly(ball, [x0, y0, rx, ry - 16, 150], 780, -540, () => {
+      sfx.swish(); bump(net, 'swish', 520); streak++;
+      popFrom(net, streak >= 2 ? `連進 ${streak}` : (tapN % 3 ? '+2' : '+3'), ['#db2777', '#7c3aed', '#2563eb', '#ea580c'][tapN % 4]);
+      fly(ball, [rx, ry - 16, rx, ry + 52, 0], 300, -120, () => end(madeLine()));
+    });
+  } else {
+    fly(ball, [x0, y0, rx + 26, ry - 14, 150], 760, -540, () => {
+      sfx.rim(); streak = 0;
+      fly(ball, [rx + 26, ry - 14, rx + 120, 382, 60], 620, 260, () => { sfx.bounce(); end(pick(MISS_LINES)); });
+    });
+  }
+}
+function fireworks() { // 點台北 101：放幾朵實色煙火
+  const fx = $('svg.scene .sc-fx'); if (!fx || reduceMotion()) return;
+  const colors = ['#f472b6', '#fbbf24', '#60a5fa', '#a78bfa', '#fb923c', '#2dd4bf', '#f87171'];
+  const spots = [[455, 92], [392, 126], [522, 116], [430, 60], [500, 62]];
+  spots.slice(0, 3 + (tapN % 3)).forEach(([cx, cy], i) => setTimeout(() => {
+    sfx.pop();
+    const NS = 'http://www.w3.org/2000/svg', g = document.createElementNS(NS, 'g'), n = 12, c1 = colors[(i * 3 + tapN) % colors.length], c2 = colors[(i * 3 + tapN + 2) % colors.length], rays = [];
+    for (let k = 0; k < n; k++) {
+      const a = k / n * Math.PI * 2, l = document.createElementNS(NS, 'line');
+      l.setAttribute('stroke', k % 2 ? c1 : c2); l.setAttribute('stroke-width', '4'); l.setAttribute('stroke-linecap', 'round');
+      g.appendChild(l); rays.push([l, Math.cos(a), Math.sin(a)]);
+    }
+    fx.appendChild(g);
+    const t0 = performance.now(), D = 950, R = 34 + (i % 3) * 7;
+    const step = now => {
+      const k = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - k, 3), r1 = R * e, r0 = Math.max(0, r1 - 15);
+      rays.forEach(([l, c, s]) => { l.setAttribute('x1', (cx + c * r0).toFixed(1)); l.setAttribute('y1', (cy + s * r0 + 8 * k * k).toFixed(1)); l.setAttribute('x2', (cx + c * r1).toFixed(1)); l.setAttribute('y2', (cy + s * r1 + 12 * k * k).toFixed(1)); });
+      g.setAttribute('opacity', k < 0.6 ? '1' : (1 - (k - 0.6) / 0.4).toFixed(2));
+      if (k < 1) requestAnimationFrame(step); else g.remove();
+    };
+    requestAnimationFrame(step);
+  }, i * 260));
+}
+function wireScene() {
+  const on = (sel, fn) => document.querySelectorAll(sel).forEach(el => el.addEventListener('click', e => { e.stopPropagation(); fn(el); }));
+  on('#cat-slot', () => shoot());
+  on('#brandCat', b => {
+    bump(b, 'bounce', 480);
+    if (frameOn()) shoot(); else { sfx.bounce(); sfx.bounce(0.3); tapN++; toast('🏀 ' + pick(TIPS)); }
+  });
+  on('#sc-hoop', () => { sfx.swish(); bump($('svg.scene .sc-net'), 'swish', 520); tapN++; say(pick(['唰～籃網說：好球是等出來的 🎯', '籃框：今天也照計畫出手嗎？🏀', '空心入網的聲音，跟照紀律出場一樣舒服 😌'])); });
+  on('#sc-board', () => {
+    sfx.buzzer(); const C = lastC;
+    say(C ? `目前戰績 ${C.s.winDays} 勝 ${C.s.lossDays} 敗：賺錢的日子 ${C.s.winDays} 天、賠錢的日子 ${C.s.lossDays} 天${C.s.flatDays ? `，打平 ${C.s.flatDays} 天` : ''}。` : '還沒開賽！記下第一天，記分板就會開始計分 🏀', 6000);
+  });
+  on('#sc-101', () => { fireworks(); say('🎆 台北 101 放煙火！為每天守紀律的自己喝采。'); });
+  on('.sc-vend', () => { sfx.clunk(); say('🥤 叩咚！來瓶運動飲料。補水別忘了，記帳也別忘了。'); });
+  on('.sc-bike', () => { sfx.ring(); say('🚲 叮鈴鈴～騎慢一點，做單也是，不用急。'); });
+  on('.sc-stand', () => { sfx.clap(); say('📣 看台：防守！防守！先守住本金再進攻！'); });
+  on('.sc-bench', () => { [0, 0.3, 0.6].forEach(at => sfx.bounce(at)); say('🧃 板凳區：連賠的時候，先下場休息也是戰術。'); });
+  on('.sc-gate', () => { sfx.whistle(); say(`🏀 歡迎來到${view().settings.name ? view().settings.name.slice(-2) : '睿洋'}籃球場！今天也照計畫打。`); });
+  on('.sc-drift', el => { bump(el, 'shy', 1400); say('☁️ 雲朵：慢慢來，比較快。'); });
+  on('.sc-sun, .sc-moon', el => { const night = el.classList.contains('sc-sun'); $('#themeBtn').click(); say(night ? '🌙 開燈，打夜場！' : '☀️ 天亮了，白天場開打！'); });
+  // 主卡：點四格數字，籃球貓用白話解釋；點大數字重跑一次
+  $('#app').addEventListener('click', e => {
+    const t = e.target.closest('[data-say]'); if (t) { bump(t, 'pop', 420); sfx.bounce(); say(t.dataset.say, 7000); return; }
+    if (e.target.closest('#heroNum')) { heroShown = Number(e.target.closest('#heroNum').dataset.v) * 0.8; countUp(); sfx.bounce(); }
+  });
+  addEventListener('resize', placeSay);
+}
+
+const INSTALL_KEY = 'trade-diary.install-dismissed';
+const isStandalone = () => navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+const isIOS = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const inLineApp = () => /\bLine\//i.test(navigator.userAgent) || /FBAN|FBAV|Instagram/i.test(navigator.userAgent);
+let installEvt = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt = e; render(); });
+function installHtml() {
+  if (viewKey || demo || isStandalone() || load(INSTALL_KEY, false)) return '';
+  const x = '<button class="x" data-act="hideInstall" aria-label="關閉">✕</button>';
+  if (isIOS() && inLineApp()) return `<div class="install">${x}<b>📲 先用 Safari 打開</b><ol><li>點右下角 <b>⋯</b>（或右上角選單）</li><li>選「<b>用預設瀏覽器開啟</b>」或「在 Safari 中開啟」</li><li>在 Safari 裡照著出現的步驟加入主畫面</li></ol></div>`;
+  if (isIOS()) return `<div class="install">${x}<b>📲 加到主畫面，變成一個 APP</b><ol><li>點 Safari 下方（或上方）的 <span class="share">⬆︎</span> 分享</li><li>往下滑，選「<b>加入主畫面</b>」</li><li>右上角按「<b>新增</b>」</li>${writeKey && SYNC_URL ? '<li>從主畫面打開後，點右上 ⚙️ → 貼上<b>同步碼</b> → 連線</li>' : ''}</ol>${writeKey && SYNC_URL ? '<button class="btn small" data-act="copyCode">📋 先複製同步碼</button>' : ''}<small>之後每天都從主畫面的圖示打開來記錄。iPhone 的主畫面 App 跟 Safari 資料是分開存的，在 Safari 裡記的不會帶過去。</small></div>`;
+  if (installEvt) return `<div class="install">${x}<b>📲 安裝成 APP</b><small>安裝後主畫面會出現圖示，打開就是全螢幕。</small><button class="btn small" data-act="install">安裝</button></div>`;
+  return '';
+}
+function bannersHtml() {
+  let h = installHtml();
+  if (SYNC_URL && !viewKey && !demo && !writeKey && (isStandalone() || state.records.length)) h += `<div class="banner"><span>☁️ 還沒開啟雲端同步：輸入一次同步碼，資料就會自動備份到雲端。</span><span class="sp"></span><button class="btn small primary" data-act="openCode">輸入同步碼</button></div>`;
+  if (demo) h += `<div class="banner warn"><span>👀 你正在看<b>範例資料</b>（假的，不會存起來）。</span><span class="sp"></span><button class="btn small primary" data-act="exitDemo">清除範例，開始記我自己的</button></div>`;
+  if (!storageOk) h += `<div class="banner warn">⚠️ 這個瀏覽器不讓網頁存資料（可能是無痕模式）。記錄完請到 ⚙️ 匯出備份。</div>`;
+  if (viewKey) {
+    h += remote ? `<div class="banner"><span>👀 <b>觀看模式</b>：只能看、不能改。最後更新 <b>${fmtUpdated(remote.updatedAt)}</b>，每 3 分鐘自動更新。</span><span class="sp"></span><button class="btn small" data-act="refresh">重新整理</button></div>`
+      : syncState === 'fail' ? `<div class="banner warn"><span>📡 讀不到雲端資料${SYNC_URL ? '（網路不穩或連結不完整）' : '（雲端還沒設定好）'}。</span><span class="sp"></span>${SYNC_URL ? '<button class="btn small" data-act="refresh">重新整理</button>' : ''}</div>` : `<div class="banner">⏳ 正在讀取雲端資料…</div>`;
+  }
+  if (!demo && !viewKey && !(writeKey && SYNC_URL && !syncError) && state.records.length >= 5) {
+    const days = state.lastBackup ? Math.floor((Date.now() - state.lastBackup) / 864e5) : null;
+    if (days == null || days >= 7) h += `<div class="banner warn"><span>💾 ${days == null ? '還沒備份過' : `已經 ${days} 天沒備份`}。資料只存在這台裝置，換手機或清除瀏覽器就會不見。</span><span class="sp"></span><button class="btn small" data-act="export">立刻備份</button></div>`;
+  }
+  return h;
+}
+function onboardHtml() {
+  return `<section class="card onboard"><h2>從 ${money(state.settings.capital)} 元開始的做單日記</h2>
+  <p>每天晚上 10 點，打開期貨 APP 把「權益總值」抄進來。損益、勝率、回撤、跟大盤比，全部自動幫你算。</p>
+  <div class="hero-cta" style="justify-content:center"><button class="btn primary big" data-act="entry">✍️ 記錄第一天</button><button class="btn big" data-act="demo">看範例長怎樣</button></div>
+  <div class="steps"><div><b>① 確認本金</b>預設 ${money(CAPITAL0)} 元，不一樣請到右上 ⚙️ 改。</div><div><b>② 每晚抄一個數字</b>只要「權益總值」，其他都是選填。</div><div><b>③ 每週備份一次</b>⚙️ → 匯出備份，傳到 LINE 給自己。</div></div></section>`;
+}
+function heroHtml(C) {
+  const L = C.last, s = C.s, t = todayIso();
+  const recordedToday = view().records.some(r => r.date === t);
+  const hr = new Date().getHours();
+  const rem = demo ? '' : viewKey ? (recordedToday ? `<span class="reminder done">✓ 今天記好了</span>` : `<span class="reminder">今天還沒記錄</span>`) : recordedToday ? `<span class="reminder done">✓ 今天記好了</span>` : hr >= 21 ? `<span class="reminder">⏰ 今晚還沒記錄喔</span>` : `<span class="reminder" style="opacity:.8">晚上 10 點記得來記錄</span>`;
+  const dayLbl = L.date === t ? '今日' : `${md(L.date)}（${wd(L.date)}）`;
+  const streak = s.cur >= 2 && s.curKind ? `<span class="streak ${s.curKind > 0 ? 'hot' : 'cold'}">${s.curKind > 0 ? '🔥 連賺' : '🧊 連賠'} ${s.cur} 天</span>` : '';
+  const gap = s.benchCum == null ? null : s.cum - s.benchCum;
+  // 四格可以點：籃球貓用白話解釋這個數字
+  const tile = (label, val, cls, em, sayText) => `<button type="button" class="tile" data-say="${esc(sayText)}"><span>${label}</span><b class="${cls}">${val}</b><em>${em}</em></button>`;
+  return `<section class="card" id="sec-hero" data-tab="home"><div class="hero"><div>
+    <p class="eyebrow">目前權益總值 · ${L.date.replaceAll('-', '/')}（${wd(L.date)}）</p>
+    <div class="hero-eq num"><span id="heroNum" data-v="${L.equity}">${money(L.equity)}</span><small>元</small></div>
+    <div class="hero-today ${tone(L.pnl)}">${dayLbl} ${arrow(L.pnl)} ${sMoney(L.pnl)} 元（${sPct(L.ret)}）<span class="muted">${L.flow ? ` · 含${L.flow > 0 ? '入金' : '出金'} ${money(Math.abs(L.flow))} 已排除` : ''}</span></div>
+    <div class="hero-cta">${viewKey ? '' : '<button class="btn primary big" data-act="entry">✍️ 記錄今天</button>'}${rem}${streak}</div>
+  </div><div class="tiles">
+    ${tile('📈 累積報酬率', `${arrow(s.cum)} ${sPct(s.cum)}`, tone(s.cum), `從 ${money(C.capital)} 元起算`,
+      `累積報酬 ${sPct(s.cum)}：從 ${money(C.capital)} 元開始算到現在，入金出金的影響已經扣掉，可以直接跟大盤比。`)}
+    ${tile('🆚 同期大盤', s.benchCum == null ? '—' : arrow(s.benchCum) + ' ' + sPct(s.benchCum), tone(s.benchCum), s.benchCum == null ? '大盤資料讀取中' : (s.cum >= s.benchCum ? '🏆 目前贏大盤' : '目前輸大盤'),
+      s.benchCum == null ? '大盤資料還在讀取中，等一下再點我 📡' : `同一段時間大盤 ${sPct(s.benchCum)}，${gap >= 0 ? `你贏大盤 ${pct(gap)} 🏆` : `你落後大盤 ${pct(-gap)}。不用急，守紀律最重要。`}`)}
+    ${tile('💰 淨損益', sMoney(s.netPnl), tone(s.netPnl), '已扣成本、不含入出金',
+      `淨損益 ${sMoney(s.netPnl)} 元：所有賺賠加起來（已經扣掉手續費和稅），入金、出金不算在裡面。`)}
+    ${tile('🛡️ 最大回撤', s.maxDd < 0 ? sPct(s.maxDd) : '0.00%', s.maxDd < 0 ? 'down' : 'flat', `目前離高點 ${sPct(s.curDd)}`,
+      s.maxDd < 0 ? `最大回撤 ${sPct(s.maxDd)}：帳戶從最高點最多掉過這麼多，現在離高點 ${sPct(s.curDd)}。超過 20% 就該減少口數。` : '還沒有從高點往下掉過，防守滿分 🛡️')}
+  </div></div></section>`;
+}
+function tipsFor(C) {
+  const s = C.s, out = [];
+  if (s.days < 5) out.push(['📝', `目前 ${s.days} 天紀錄，累積到 20 天以上，勝率與賺賠比才比較有參考價值。`]);
+  if (s.maxDd <= -0.2) out.push(['🧯', `最大回撤 ${sPct(s.maxDd)} 已超過 20%，建議先減少口數、檢查停損有沒有確實執行。`]);
+  else if (s.maxDd <= -0.1) out.push(['⚠️', `最大回撤 ${sPct(s.maxDd)}，接近警戒區（20%），注意部位大小。`]);
+  if (s.worst && s.worst.pnl < 0 && C.capital && -s.worst.pnl / C.capital > 0.1) out.push(['📉', `最大單日虧損 ${sMoney(s.worst.pnl)} 超過本金 10%，單日停損可以設緊一點。`]);
+  if (s.costShare != null && s.costShare > 0.3) out.push(['💸', `成本吃掉毛利的 ${pct(s.costShare, 0)}，交易次數可能太多。`]);
+  if (s.winRate != null && s.payoff != null && s.days >= 10) {
+    if (s.winRate >= 0.55 && s.payoff < 0.8) out.push(['🔁', '勝率高但賺賠比偏低：常常小賺，偶爾一次大賠。試著讓獲利單多抱一點、虧損單砍快一點。']);
+    if (s.winRate < 0.4 && s.payoff > 1.5) out.push(['🎯', '勝率低但賺賠比高：典型的順勢打法，關鍵是連賠時不要放大口數。']);
+  }
+  if (s.cur >= 3 && s.curKind < 0) out.push(['🧊', `已經連賠 ${s.cur} 天，今天可以考慮休息或只做一口。`]);
+  if (s.cur >= 3 && s.curKind > 0) out.push(['🔥', `連賺 ${s.cur} 天！手感好的時候更要守紀律，別突然加大口數。`]);
+  if (!out.length) out.push(['✅', '目前各項指標都在健康範圍，繼續保持紀律。']);
+  return out.slice(0, 3);
+}
+function summaryHtml(C) {
+  const s = C.s;
+  const pf = s.profitFactor === Infinity ? '∞（還沒賠過）' : ratio(s.profitFactor);
+  const streak = s.cur ? `${s.curKind > 0 ? '連賺' : '連賠'} ${s.cur} 天` : '—';
+  const grp = (i, title, peek, peekCls, body) => `<details class="sum-group" data-grp="${i}"${!isM() || sumOpen.has(i) ? ' open' : ''}><summary><h3>${title}</h3><span class="peek ${peekCls}">${peek}</span></summary>${body}</details>`;
+  return `<section class="card" id="sec-summary" data-tab="home"><div class="card-head"><div><p class="eyebrow">📋 賽後數據</p><h2>損益績效總表</h2><p class="sub">點 <b>?</b> 看每個數字是什麼意思。</p></div></div>
+  <div class="sum-grid">
+    ${grp(0, '💰 賺了多少', sMoney(s.netPnl), tone(s.netPnl), `
+      ${sumRow('初始本金', money(C.capital), '', null)}
+      ${sumRow('目前權益', money(C.last.equity), '', null)}
+      ${sumRow('淨損益', sMoney(s.netPnl), tone(s.netPnl), 'netPnl')}
+      ${sumRow('累積報酬率', sPct(s.cum), tone(s.cum), 'cum')}
+      ${sumRow('同期大盤', s.benchCum == null ? '—' : sPct(s.benchCum), tone(s.benchCum), null)}
+      ${sumRow('總獲利', sMoney(s.totalProfit), tone(s.totalProfit), null)}
+      ${sumRow('總虧損', sMoney(s.totalLoss), tone(s.totalLoss), null)}
+      ${sumRow('累計入金／出金', `${money(s.deposits)} ／ ${money(-s.withdrawals)}`, '', null)}
+    `)}
+    ${grp(1, '🎯 打得準不準', `勝率 ${pct(s.winRate, 0)}`, '', `
+      ${sumRow('紀錄日數', s.days + ' 天', '', null)}
+      ${sumRow('獲利／虧損／持平', `${s.winDays}／${s.lossDays}／${s.flatDays} 天`, '', null)}
+      ${sumRow('勝率', pct(s.winRate, 1), '', 'winRate')}
+      ${sumRow('獲利因子', pf, '', 'pf')}
+      ${sumRow('平均獲利', sMoney(s.avgWin), 'up', null)}
+      ${sumRow('平均虧損', sMoney(s.avgLoss), 'down', null)}
+      ${sumRow('平均賺賠比', ratio(s.payoff), '', 'payoff')}
+      ${sumRow('平均每日損益', sMoney(s.avgDaily), tone(s.avgDaily), 'expect')}
+    `)}
+    ${grp(2, '🛡️ 風險控管', `回撤 ${sPct(s.maxDd, 1)}`, s.maxDd < 0 ? 'down' : '', `
+      ${sumRow('最大回撤', `${sPct(s.maxDd)}（${sMoney(s.maxDdMoney)}）`, s.maxDd < 0 ? 'down' : '', 'mdd')}
+      ${sumRow('目前回撤', sPct(s.curDd), s.curDd < 0 ? 'down' : '', null)}
+      ${sumRow('報酬回撤比', ratio(s.retOverDd), '', 'rdd')}
+      ${sumRow('最大單日獲利', s.best && s.best.pnl > 0 ? `${sMoney(s.best.pnl)}（${md(s.best.date)}）` : '—', 'up', null)}
+      ${sumRow('最大單日虧損', s.worst && s.worst.pnl < 0 ? `${sMoney(s.worst.pnl)}（${md(s.worst.date)}）` : '—', 'down', null)}
+      ${sumRow('目前連續', streak, s.curKind > 0 ? 'up' : s.curKind < 0 ? 'down' : '', null)}
+      ${sumRow('最長連賺／連賠', `${s.maxW}／${s.maxL} 天`, '', null)}
+      ${sumRow('每日波動', pct(s.vol), '', 'vol')}
+      ${sumRow('交易成本', `${money(s.totalCost)}${s.totalLots ? `（${money(s.totalLots)} 口）` : ''}`, '', 'costShare')}
+    `)}
+  </div>
+  <ul class="tips">${tipsFor(C).map(([e, t]) => `<li><span aria-hidden="true">${e}</span><span>${esc(t)}</span></li>`).join('')}</ul></section>`;
+}
+function winRateHtml(C) {
+  const s = C.s, tot = s.winDays + s.lossDays + s.flatDays || 1;
+  const maxAbs = Math.max(s.avgWin || 0, -(s.avgLoss || 0)) || 1;
+  return `<div class="wr">
+    <div class="wr-box"><div class="lbl">勝率</div><div class="big">${pct(s.winRate, 1)}</div>
+      <div class="wr-bar" role="img" aria-label="獲利 ${s.winDays} 天、虧損 ${s.lossDays} 天、持平 ${s.flatDays} 天">
+        <div style="width:${s.winDays / tot * 100}%;background:var(--up-mark)"></div><div style="width:${s.flatDays / tot * 100}%;background:var(--muted)"></div><div style="width:${s.lossDays / tot * 100}%;background:var(--down-mark)"></div></div>
+      <div class="wr-cap"><span class="up">賺 ${s.winDays} 天</span><span>平 ${s.flatDays}</span><span class="down">賠 ${s.lossDays} 天</span></div></div>
+    <div class="wr-box"><div class="lbl">賺賠比 ・ 獲利因子 ${s.profitFactor === Infinity ? '∞' : ratio(s.profitFactor)}</div><div class="big">${ratio(s.payoff)}</div>
+      <div class="pay-row"><span>平均賺</span><div class="pay-track"><div style="width:${(s.avgWin || 0) / maxAbs * 100}%;background:var(--up-mark)"></div></div><b class="up num">${sMoney(s.avgWin)}</b></div>
+      <div class="pay-row"><span>平均賠</span><div class="pay-track"><div style="width:${-(s.avgLoss || 0) / maxAbs * 100}%;background:var(--down-mark)"></div></div><b class="down num">${sMoney(s.avgLoss)}</b></div></div>
+  </div><p class="foot">賺賠比 1 以上＋勝率 45% 以上，長期通常會賺；兩個都低就要調整方法。</p>`;
+}
+function calendarHtml(C) {
+  const rows = C.rows, months = [...new Set(rows.map(r => r.date.slice(0, 7)))];
+  if (!calMonth || !months.includes(calMonth)) calMonth = months[months.length - 1];
+  const [Y, M] = calMonth.split('-').map(Number);
+  const byDate = Object.fromEntries(rows.map(r => [r.date, r]));
+  const mRows = rows.filter(r => r.date.startsWith(calMonth));
+  const mPnl = mRows.reduce((s, r) => s + r.pnl, 0), mRet = mRows.reduce((p, r) => p * (1 + r.ret), 1) - 1;
+  const mW = mRows.filter(r => r.pnl > 0).length, mL = mRows.filter(r => r.pnl < 0).length, mCost = mRows.reduce((s, r) => s + r.cost, 0);
+  const maxAbs = Math.max(1, ...rows.map(r => Math.abs(r.pnl)));
+  const idx = months.indexOf(calMonth), t = todayIso();
+  const tint = v => { if (!v) return 'var(--card-2)'; const a = 14 + Math.round(Math.min(1, Math.abs(v) / maxAbs) * 50); return `color-mix(in srgb, ${v > 0 ? 'var(--up-mark)' : 'var(--down-mark)'} ${a}%, var(--card))`; };
+  let cells = ['一', '二', '三', '四', '五'].map(d => `<div class="cal-h">${d}</div>`).join('') + `<div class="cal-h">週合計</div>`;
+  const first = new Date(Y, M - 1, 1), last = new Date(Y, M, 0);
+  let d = new Date(first); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); // 該週週一
+  while (d <= last) {
+    let wk = 0, wkHas = false;
+    for (let k = 0; k < 7; k++) {
+      const iso = isoOf(d), r = byDate[iso], inMonth = d.getMonth() === M - 1;
+      if (r && inMonth) { wk += r.pnl; wkHas = true; }
+      if (k < 5) {
+        if (!inMonth) cells += `<div class="cal-cell out"></div>`;
+        else if (r) cells += `<div class="cal-cell${iso === t ? ' today' : ''}" style="background:${tint(r.pnl)}"><span class="d">${d.getDate()}</span><span class="p ${tone(r.pnl)}">${compact(r.pnl)}</span><span class="r ${tone(r.pnl)}">${sPct(r.ret, 1)}</span>${r.cost ? `<span class="c">💸${money(r.cost)}</span>` : ''}<button class="cell-btn" data-edit="${iso}" aria-label="${iso} 損益 ${sMoney(r.pnl)}，點擊編輯"></button></div>`;
+        else cells += `<div class="cal-cell empty${iso === t ? ' today' : ''}"><span class="d">${d.getDate()}</span></div>`;
+      }
+      d.setDate(d.getDate() + 1);
+    }
+    cells += `<div class="cal-cell week"><span class="d">本週</span>${wkHas ? `<span class="p ${tone(wk)}">${compact(wk)}</span>` : '<span class="d">—</span>'}</div>`;
+  }
+  return `<div class="card-head"><div><p class="eyebrow">📅 每日成績</p><h2>報酬日曆</h2><p class="sub">顏色越深＝當天賺（紅）或賠（綠）越多；點格子可以修改。</p></div>
+    <div class="cal-nav"><button class="icon-btn" data-cal="-1" ${idx <= 0 ? 'disabled' : ''} aria-label="上個月">‹</button><strong>${Y} 年 ${M} 月</strong><button class="icon-btn" data-cal="1" ${idx >= months.length - 1 ? 'disabled' : ''} aria-label="下個月">›</button></div></div>
+    <div class="cal-sum"><span>月損益 <b class="${tone(mPnl)}">${sMoney(mPnl)}</b></span><span>月報酬 <b class="${tone(mRet)}">${sPct(mRet)}</b></span><span>勝率 <b>${mW + mL ? pct(mW / (mW + mL), 0) : '—'}</b>（${mW} 勝 ${mL} 敗）</span><span>成本 <b>${money(mCost)}</b></span></div>
+    <div class="cal">${cells}</div>
+    <div class="cal-legend"><span>賠多</span><span class="sq" style="background:color-mix(in srgb,var(--down-mark) 64%,var(--card))"></span><span class="sq" style="background:color-mix(in srgb,var(--down-mark) 22%,var(--card))"></span><span class="sq" style="background:var(--card-2)"></span><span class="sq" style="background:color-mix(in srgb,var(--up-mark) 22%,var(--card))"></span><span class="sq" style="background:color-mix(in srgb,var(--up-mark) 64%,var(--card))"></span><span>賺多</span><span class="cal-coin-note" style="margin-left:8px">💸＝當天手續費＋稅</span></div>`;
+}
+function leakHtml(C) {
+  const s = C.s, rows = C.rows;
+  const hasCost = s.totalCost > 0;
+  const share = s.costShare != null ? Math.min(1, s.costShare) : (hasCost ? 1 : 0);
+  const level = hasCost ? 0.15 + 0.7 * Math.min(1, s.totalCost / Math.max(1, C.capital * 0.1)) : 0.08; // 水位＝成本對本金 10% 的比例
+  const yTop = 30 + (1 - level) * 100;
+  const months = [...new Set(rows.map(r => r.date.slice(0, 7)))].reverse();
+  const mStats = months.map(m => { const rs = rows.filter(r => r.date.startsWith(m)); const cost = rs.reduce((a, r) => a + r.cost, 0), pnl = rs.reduce((a, r) => a + r.pnl, 0), lots = rs.reduce((a, r) => a + r.lots, 0); return { m, cost, pnl, gross: pnl + cost, lots, days: rs.filter(r => r.cost > 0).length }; });
+  const thisM = mStats[0];
+  const bucket = `<svg viewBox="0 0 160 190" aria-hidden="true">
+    <defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#67e8f9"/><stop offset="1" stop-color="#8b5cf6"/></linearGradient><clipPath id="bk"><path d="M22 30 L138 30 L124 136 Q122 146 112 146 L48 146 Q38 146 36 136 Z"/></clipPath></defs>
+    <rect x="0" y="${yTop}" width="160" height="${160 - yTop}" fill="url(#wg)" opacity=".75" clip-path="url(#bk)"/>
+    <path d="M22 30 L138 30 L124 136 Q122 146 112 146 L48 146 Q38 146 36 136 Z" fill="none" stroke="var(--ink-2)" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M18 30 H142" stroke="var(--ink-2)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M40 30 Q80 -4 120 30" fill="none" stroke="var(--muted)" stroke-width="2.5"/>
+    <circle cx="80" cy="146" r="3.5" fill="var(--bg)" stroke="var(--ink-2)" stroke-width="1.5"/>
+    ${hasCost ? `<g fill="var(--gold)"><path class="drop" d="M80 152 q-4 7 0 10 q4 -3 0 -10z"/><path class="drop d2" d="M80 152 q-4 7 0 10 q4 -3 0 -10z"/><path class="drop d3" d="M80 152 q-4 7 0 10 q4 -3 0 -10z"/></g>` : ''}
+    <text x="80" y="${Math.min(128, yTop + 26)}" text-anchor="middle" font-size="15" font-weight="800" fill="var(--ink)">${money(s.totalCost)}</text>
+  </svg>`;
+  return `<div class="card-head"><div><p class="eyebrow">💧 被手續費與期交稅拿走的錢</p><h2>交易成本漏水筒</h2><p class="sub">每筆交易都會從桶子漏一點錢出去。新手最常輸給的不是市場，是成本。</p></div></div>
+  ${hasCost ? '' : `<div class="banner" style="margin:0 0 12px">💡 還沒有成本資料。記錄時打開「選填」，填上 APP 裡的手續費＋期交稅，這個桶子就會動起來。</div>`}
+  <div class="leak"><div class="bucket">${bucket}</div><div style="width:100%">
+    <div class="leak-tiles">
+      <div class="tile"><span>累積成本</span><b>${money(s.totalCost)} 元</b><em>等於本金的 ${pct(s.costOfCapital, 1)}</em></div>
+      <div class="tile"><span>${thisM ? +thisM.m.slice(5) + ' 月成本' : '本月成本'}</span><b>${money(thisM ? thisM.cost : 0)} 元</b><em>${thisM && thisM.days ? `${thisM.days} 個有交易的日子` : '—'}</em></div>
+      <div class="tile"><span>成本吃掉毛利</span><b class="${s.costShare > 0.3 ? 'cost-warn' : ''}">${s.costShare > 0.3 ? '⚠️ ' : ''}${s.costShare == null ? (hasCost && s.grossPnl <= 0 ? '全部' : '—') : pct(s.costShare, 0)}${s.costShare > 0.3 ? ' 偏高' : ''}</b><em>${s.costPerLot ? `平均每口 ${s.costPerLot.toFixed(0)} 元` : '填口數可算每口成本'}</em></div>
+    </div>
+    <div class="leak-eq"><span>交易本身 <b class="${tone(s.grossPnl)}">${sMoney(s.grossPnl)}</b></span><span class="op">−</span><span>💸 成本 <b>${money(s.totalCost)}</b></span><span class="op">＝</span><span>淨損益 <b class="${tone(s.netPnl)}">${sMoney(s.netPnl)}</b></span></div>
+  </div></div>
+  ${mStats.length ? `<details style="margin-top:12px"><summary style="cursor:pointer;font-size:13.5px;color:var(--ink-2)">每月成本紀錄</summary><div class="tbl-wrap"><table><thead><tr><th>月份</th><th>口數</th><th>成本</th><th>每口</th><th>毛損益</th><th>淨損益</th></tr></thead><tbody>
+    ${mStats.map(x => `<tr><td>${x.m.replace('-', '/')}</td><td>${x.lots ? money(x.lots) : '—'}</td><td>${money(x.cost)}</td><td>${x.lots ? (x.cost / x.lots).toFixed(0) : '—'}</td><td class="${tone(x.gross)}">${sMoney(x.gross)}</td><td class="${tone(x.pnl)}">${sMoney(x.pnl)}</td></tr>`).join('')}
+  </tbody></table></div></details>` : ''}
+  <p class="foot">毛損益＝淨損益＋成本，是「如果不用付手續費」你的成績。水位＝累積成本相對於本金 10% 的高度。</p>`;
+}
+function logHtml(C) {
+  const limit = isM() ? 20 : 10;
+  const rows = C.rows.slice().reverse(), shown = showAllLog ? rows : rows.slice(0, limit);
+  let cards = '', curM = '';
+  shown.forEach(r => {
+    const m = r.date.slice(0, 7);
+    if (m !== curM) { curM = m; const mt = C.rows.filter(x => x.date.startsWith(m)).reduce((a, x) => a + x.pnl, 0); cards += `<div class="lc-month"><span>${+m.slice(0, 4)} 年 ${+m.slice(5)} 月</span><span>月損益 <b class="${tone(mt)}">${sMoney(mt)}</b></span></div>`; }
+    const tags = (r.flow ? `<span class="lc-tag">${r.flow > 0 ? '入金' : '出金'} ${money(Math.abs(r.flow))}</span>` : '') + (r.cost ? `<span class="lc-tag">💸 ${money(r.cost)}</span>` : '') + (r.lots ? `<span class="lc-tag">${r.lots} 口</span>` : '');
+    cards += `<button class="log-card lc-${tone(r.pnl)}" data-edit="${r.date}" aria-label="${r.date} 損益 ${sMoney(r.pnl)}，點擊修改"><span class="lc-date">${md(r.date)}<small>週${wd(r.date)}</small></span><span class="lc-main"><b class="${tone(r.pnl)}">${arrow(r.pnl)} ${sMoney(r.pnl)}</b><small class="${tone(r.ret)}">${sPct(r.ret)}</small></span><span class="lc-eq">權益 ${money(r.equity)} ${tags}</span>${r.note ? `<span class="lc-note">「${esc(r.note)}」</span>` : ''}<span class="lc-go" aria-hidden="true">›</span></button>`;
+  });
+  return `<section class="card" id="sec-log" data-tab="log"><div class="card-head"><div><p class="eyebrow">📝 日記本</p><h2>每日紀錄</h2><p class="sub">記錯了？點一下那天（或「改」）就能修正，所有圖表會自動重算。</p></div><button class="btn small" data-act="export">💾 備份</button></div>
+  <div class="log-cards">${cards}</div>
+  <div class="tbl-wrap log-table"><table><thead><tr><th>日期</th><th>權益總值</th><th>當日損益</th><th>%</th><th>出入金</th><th>成本</th><th>口數</th><th>心得</th><th></th></tr></thead><tbody>
+  ${shown.map(r => `<tr><td>${md(r.date)}（${wd(r.date)}）</td><td>${money(r.equity)}</td><td class="${tone(r.pnl)}">${arrow(r.pnl)}${sMoney(r.pnl)}</td><td class="${tone(r.ret)}">${sPct(r.ret)}</td><td>${r.flow ? sMoney(r.flow) : ''}</td><td>${r.cost ? money(r.cost) : ''}</td><td>${r.lots || ''}</td><td class="note">${esc(r.note)}</td><td><button class="btn small" data-edit="${r.date}">改</button></td></tr>`).join('')}
+  </tbody></table></div>${rows.length > limit ? `<p style="text-align:center;margin:10px 0 0"><button class="btn small" data-act="toggleLog">${showAllLog ? '收起' : `顯示全部 ${rows.length} 天`}</button></p>` : ''}</section>`;
+}
+function renderBenchNote() {
+  const el = $('#benchNote'); if (!el) return;
+  const dates = Object.keys(bench.closes).sort(), lastB = dates[dates.length - 1];
+  el.textContent = benchStatus === 'loading' ? '⏳ 正在向證交所抓加權指數…'
+    : !lastB ? '📡 抓不到大盤資料（可能沒網路），連上網路後重新整理就會自動補上。'
+    : `大盤資料：證交所加權指數收盤，更新到 ${lastB.replaceAll('-', '/')}。週末或假日記錄的那天，會用前一個交易日的收盤比較。`;
+}
+
+function drawCharts(C) {
+  const rows = C.rows, capital = C.capital;
+  const labels = ['起點', ...rows.map(r => r.date)];
+  const upM = css('--up-mark'), dnM = css('--down-mark'), mine = css('--mine'), bch = css('--bench'), muted = css('--muted');
+  const at = i => rows[i - 1];
+  const T = h => isM() ? Math.round(h * 1.3) : h;
+  // 1. 權益曲線
+  chart($('#cEquity'), {
+    labels, height: T(240), aria: '每日權益總值折線圖',
+    series: [
+      { name: '權益總值', color: mine, values: [capital, ...rows.map(r => r.equity)], area: true },
+      { name: '投入本金', color: muted, dashed: true, values: [capital, ...rows.map(r => capital + r.cumFlow)] }],
+    tip: i => i === 0 ? tipHead('起點') + tipRow('初始本金', money(capital) + ' 元') : tipHead(at(i).date) + tipRow('權益總值', money(at(i).equity) + ' 元', mine) + tipRow('投入本金', money(capital + at(i).cumFlow), muted) + tipRow('當日損益', sMoney(at(i).pnl), null, tone(at(i).pnl))
+  });
+  // 2. 累積報酬 vs 大盤
+  const hasB = rows.some(r => r.bCum != null);
+  chart($('#cCum'), {
+    labels, height: T(240), zero: true, fmt: pctAxis, aria: '累積報酬走勢：我的帳戶實線、大盤虛線',
+    series: [{ name: '我的帳戶', color: mine, values: [0, ...rows.map(r => r.cum)] }, ...(hasB ? [{ name: '大盤', color: bch, dashed: true, values: [0, ...rows.map(r => r.bCum)] }] : [])],
+    tip: i => i === 0 ? tipHead('起點') + tipRow('兩邊都從', '0%') : tipHead(at(i).date) + tipRow('我的帳戶', sPct(at(i).cum), mine, tone(at(i).cum)) + tipRow('大盤', at(i).bCum == null ? '—' : sPct(at(i).bCum), bch, tone(at(i).bCum)) + (at(i).bCum != null ? tipRow('領先／落後', sPct(at(i).cum - at(i).bCum)) : '')
+  });
+  const L = C.last;
+  $('#cumStats').innerHTML = `<span>我的帳戶 <b class="${tone(L.cum)}">${sPct(L.cum)}</b></span><span>大盤 <b class="${tone(L.bCum)}">${L.bCum == null ? '—' : sPct(L.bCum)}</b></span>${L.bCum != null ? `<span>${L.cum >= L.bCum ? '領先' : '落後'} <b>${Math.abs((L.cum - L.bCum) * 100).toFixed(2)} 個百分點</b></span>` : ''}`;
+  // 3. 每日損益（金額／%）
+  const isPct = dailyMode === 'pct';
+  chart($('#cDaily'), {
+    labels: rows.map(r => r.date), height: T(220), fmt: isPct ? pctAxis : compactAxis, aria: '每日損益長條圖',
+    bars: { values: rows.map(r => isPct ? r.ret : r.pnl), colorOf: v => v > 0 ? upM : dnM },
+    tip: i => tipHead(rows[i].date) + tipRow('損益', sMoney(rows[i].pnl) + ' 元', null, tone(rows[i].pnl)) + tipRow('報酬率', sPct(rows[i].ret), null, tone(rows[i].ret)) + (rows[i].bRet != null ? tipRow('大盤當天', sPct(rows[i].bRet), null, tone(rows[i].bRet)) : '') + (rows[i].cost ? tipRow('💸 成本', money(rows[i].cost)) : '') + (rows[i].note ? `<div style="margin-top:4px;color:var(--ink-2)">「${esc(rows[i].note)}」</div>` : '')
+  });
+  // 4. 每日損益折線
+  chart($('#cDailyLine'), {
+    labels: rows.map(r => r.date), height: T(170), zero: true, fmt: compactAxis, aria: '每日損益折線圖',
+    series: [{ name: '每日損益', color: mine, values: rows.map(r => r.pnl), dots: rows.length <= 60, dotColor: v => v > 0 ? upM : v < 0 ? dnM : muted }],
+    tip: i => tipHead(rows[i].date) + tipRow('損益', sMoney(rows[i].pnl), null, tone(rows[i].pnl)) + tipRow('報酬率', sPct(rows[i].ret), null, tone(rows[i].ret))
+  });
+  // 5. 回撤
+  chart($('#cDd'), {
+    labels, height: T(170), zero: true, fmt: pctAxis, aria: '回撤比較：我的帳戶實線、大盤虛線',
+    series: [{ name: '我的帳戶', color: mine, values: [0, ...rows.map(r => r.dd)], area: true, areaFlip: true }, ...(hasB ? [{ name: '大盤', color: bch, dashed: true, values: [0, ...rows.map(r => r.bDd)] }] : [])],
+    tip: i => i === 0 ? tipHead('起點') + tipRow('回撤', '0%') : tipHead(at(i).date) + tipRow('我的回撤', sPct(at(i).dd), mine, tone(at(i).dd)) + tipRow('金額', sMoney(at(i).ddMoney)) + tipRow('大盤回撤', at(i).bDd == null ? '—' : sPct(at(i).bDd), bch, tone(at(i).bDd))
+  });
+  const s = C.s, lastB = [...rows].reverse().find(r => r.bDd != null);
+  $('#ddStats').innerHTML = `<span>我的最大回撤 <b class="${s.maxDd < 0 ? 'down' : ''}">${sPct(s.maxDd)}</b></span><span>大盤最大回撤 <b>${hasB ? sPct(Math.min(0, ...rows.filter(r => r.bDd != null).map(r => r.bDd))) : '—'}</b></span><span>目前 <b>${sPct(s.curDd)}</b></span>`;
+}
+function pctAxis(v) { const a = Math.abs(v * 100), t = (v * 100).toFixed(a === 0 ? 0 : a < 1 ? 2 : a < 10 ? 1 : 0); return (+t === 0 ? '0' : t) + '%'; }
+function compactAxis(v) { const a = Math.abs(v); return a >= 10000 ? (v / 10000).toFixed(a % 10000 ? 1 : 0) + '萬' : nf0.format(v); }
+
+/* ---------- events ---------- */
+function setTab(t) { curTab = t; render(); window.scrollTo(0, 0); playIntro(); }
+function wire() {
+  document.querySelectorAll('[data-chart-btn]').forEach(b => b.onclick = () => { curChart = b.dataset.chartBtn; render(); const c = document.querySelector(`[data-chart-btn="${curChart}"]`); if (c) c.scrollIntoView({ inline: 'center', block: 'nearest' }); window.scrollTo(0, 0); });
+  document.querySelectorAll('.sum-group').forEach(d => d.addEventListener('toggle', () => { if (!isM()) return; if (d.open) sumOpen.add(+d.dataset.grp); else sumOpen.delete(+d.dataset.grp); }));
+  const cal = document.querySelector('.cal');
+  if (cal) {
+    let sx = null, sy = 0;
+    cal.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+    cal.addEventListener('touchend', e => {
+      if (sx == null) return; const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) { const b = document.querySelector(`[data-cal="${dx < 0 ? 1 : -1}"]`); if (b && !b.disabled) b.click(); }
+    });
+  }
+  document.querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
+    const a = b.dataset.act;
+    if (a === 'entry') openEntry();
+    if (a === 'demo') { demo = makeDemo(); calMonth = null; render(); syncBench(); window.scrollTo({ top: 0 }); }
+    if (a === 'exitDemo') { demo = null; calMonth = null; history.replaceState(null, '', location.pathname); render(); }
+    if (a === 'export') exportJson();
+    if (a === 'refresh') refreshRemote();
+    if (a === 'copyCode') copyCode();
+    if (a === 'openCode') { $('#setBtn').click(); setTimeout(() => $('#sCode').focus(), 120); }
+    if (a === 'hideInstall') { save(INSTALL_KEY, true); render(); }
+    if (a === 'install' && installEvt) { installEvt.prompt(); installEvt.userChoice.finally(() => { installEvt = null; render(); }); }
+    if (a === 'toggleLog') { showAllLog = !showAllLog; render(); }
+  });
+  document.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openEntry(b.dataset.edit));
+  document.querySelectorAll('[data-cal]').forEach(b => b.onclick = () => {
+    const months = [...new Set(view().records.map(r => r.date.slice(0, 7)))].sort();
+    const i = months.indexOf(calMonth) + Number(b.dataset.cal);
+    if (months[i]) { calMonth = months[i]; const sec = $('#sec-calendar'); sec.innerHTML = calendarHtml(compute(view())); wire(); }
+  });
+  document.querySelectorAll('[data-daily]').forEach(b => b.onclick = () => { dailyMode = b.dataset.daily; render(); });
+  document.querySelectorAll('[data-explain]').forEach(b => b.onclick = () => {
+    openExplain = openExplain === b.dataset.explain ? null : b.dataset.explain;
+    const y = window.scrollY; const sec = $('#sec-summary'); sec.outerHTML = summaryHtml(compute(view())); wire(); window.scrollTo(0, y);
+  });
+}
+
+/* ---------- entry dialog ---------- */
+const dlg = $('#entryDlg');
+let flowKind = 'none', editing = null;
+function prevEquityBefore(iso) {
+  const st = view();
+  const prev = st.records.filter(r => r.date < iso).sort((a, b) => b.date.localeCompare(a.date))[0];
+  return prev ? prev.equity : Number(st.settings.capital) || 0;
+}
+function setFlow(kind) {
+  flowKind = kind;
+  dlg.querySelectorAll('[data-flow]').forEach(b => b.setAttribute('aria-pressed', b.dataset.flow === kind));
+  $('#fFlow').classList.toggle('hidden', kind === 'none');
+  updatePreview();
+}
+function openEntry(iso) {
+  if (viewKey) { toast('觀看模式只能看，不能修改'); return; }
+  if (demo) { toast('範例模式不能修改，先按「清除範例」開始記自己的'); return; }
+  const date = iso || todayIso();
+  fillEntry(date);
+  $('#fErr').textContent = '';
+  dlg.showModal();
+  setTimeout(() => $('#fEquity').focus(), 50);
+}
+function fillEntry(date) {
+  const r = state.records.find(x => x.date === date);
+  editing = r ? date : null;
+  $('#entryTitle').textContent = r ? `修改 ${md(date)} 的紀錄` : '記錄今天';
+  $('#fDate').value = date;
+  $('#fEquity').value = r ? r.equity : '';
+  const f = r ? Number(r.flow) || 0 : 0;
+  $('#fFlow').value = f ? Math.abs(f) : '';
+  $('#fCost').value = r && r.cost ? r.cost : '';
+  $('#fLots').value = r && r.lots ? r.lots : '';
+  $('#fNote').value = r ? r.note || '' : '';
+  $('#fMore').open = !!(r && (r.cost || r.lots || r.note));
+  $('#fDelete').classList.toggle('hidden', !r);
+  setFlow(f > 0 ? 'in' : f < 0 ? 'out' : 'none');
+}
+function readFlow() { const v = Number($('#fFlow').value) || 0; return flowKind === 'in' ? v : flowKind === 'out' ? -v : 0; }
+function updatePreview() {
+  const eq = Number($('#fEquity').value), date = $('#fDate').value;
+  syncDateChips();
+  if (date) { const pr = view().records.filter(r => r.date < date).sort((a, b) => b.date.localeCompare(a.date))[0]; $('#fLastHint').textContent = pr ? `　上一筆 ${money(pr.equity)}（${md(pr.date)}）` : `　本金 ${money(view().settings.capital)}`; }
+  const p = $('#fPreview');
+  if (!$('#fEquity').value || !isFinite(eq) || !date) { p.innerHTML = '輸入權益總值後，這裡會算出今天的損益。'; return; }
+  const prev = prevEquityBefore(date), flow = readFlow(), pnl = eq - prev - flow, base = prev + flow;
+  const ret = base > 0 ? pnl / base : 0, first = !view().records.some(r => r.date < date);
+  p.innerHTML = `今天損益 <b class="${tone(pnl)}">${arrow(pnl)} ${sMoney(pnl)} 元（${sPct(ret)}）</b><br><span class="muted" style="font-size:12.5px">＝ ${money(eq)} − ${first ? '本金' : '前一筆'} ${money(prev)}${flow ? ` − ${flow > 0 ? '入金' : '出金'} ${sMoney(flow)}` : ''}</span>` +
+    (first && flow > 0 ? `<br><span class="up" style="font-size:12.5px">⚠️ 第一筆：本金 ${money(prev)} 如果已經包含今天入的錢，這裡請選「沒有」，不然會重複扣掉、變成假虧損。</span>`
+      : Math.abs(ret) > 0.5 ? `<br><span class="up" style="font-size:12.5px">⚠️ 變動超過 50%，確認一下有沒有打錯、或忘了填入出金？</span>` : '');
+}
+['#fEquity', '#fFlow', '#fDate'].forEach(s => $(s).addEventListener('input', updatePreview));
+$('#fDate').addEventListener('change', () => {
+  const d = $('#fDate').value;
+  // 換到有紀錄的日子 → 載入那天；從「修改某天」換到空白日子 → 改成新增，避免存檔時把原本那天刪掉
+  if (d && d !== editing && (editing || state.records.some(r => r.date === d))) fillEntry(d); else updatePreview();
+});
+dlg.querySelectorAll('[data-flow]').forEach(b => b.addEventListener('click', () => { setFlow(b.dataset.flow); if (b.dataset.flow !== 'none') $('#fFlow').focus(); }));
+$('#fCancel').onclick = () => dlg.close();
+$('#fClose').onclick = () => dlg.close();
+function prevTradingDay() { const d = new Date(); do { d.setDate(d.getDate() - 1); } while (d.getDay() === 0 || d.getDay() === 6); return isoOf(d); }
+function syncDateChips() { const v = $('#fDate').value; dlg.querySelectorAll('[data-day]').forEach(b => b.setAttribute('aria-pressed', (b.dataset.day === 'today' ? todayIso() : prevTradingDay()) === v)); }
+dlg.querySelectorAll('[data-day]').forEach(b => b.addEventListener('click', () => { const f = $('#fDate'); f.value = b.dataset.day === 'today' ? todayIso() : prevTradingDay(); f.dispatchEvent(new Event('change')); }));
+let delArmed = false;
+$('#fDelete').onclick = () => {
+  if (!delArmed) { delArmed = true; $('#fDelete').textContent = '再按一次確認刪除'; setTimeout(() => { delArmed = false; $('#fDelete').textContent = '刪除這天'; }, 3000); return; }
+  state.records = state.records.filter(r => r.date !== editing); persist(); delArmed = false; $('#fDelete').textContent = '刪除這天';
+  dlg.close(); render(); toast('已刪除');
+};
+$('#entryForm').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const date = $('#fDate').value, eq = Number($('#fEquity').value);
+  if (!date) return ($('#fErr').textContent = '請選日期');
+  if (!$('#fEquity').value || !isFinite(eq) || eq < 0) return ($('#fErr').textContent = '請輸入權益總值（APP 上的數字）');
+  if (flowKind !== 'none' && !(Number($('#fFlow').value) > 0)) return ($('#fErr').textContent = '請輸入入金／出金的金額，或選「沒有」');
+  const rec = { date, equity: Math.round(eq * 100) / 100, flow: readFlow(), cost: Number($('#fCost').value) || 0, lots: Number($('#fLots').value) || 0, note: $('#fNote').value.trim() };
+  state.records = state.records.filter(r => r.date !== date && r.date !== editing).concat(rec).sort((a, b) => a.date.localeCompare(b.date));
+  persist(); dlg.close();
+  calMonth = date.slice(0, 7);
+  if (isM()) { curTab = 'home'; window.scrollTo(0, 0); }
+  render(); syncBench();
+  const row = compute(state).rows.find(r => r.date === date);
+  toast(row ? `${row.pnl > 0 ? '🏀 ' : row.pnl < 0 ? '🛡️ ' : ''}已記錄！${md(date)} ${arrow(row.pnl)} ${sMoney(row.pnl)} 元（${sPct(row.ret)}）${row.pnl < 0 ? '　有照停損就是好防守，下個交易日再上場' : ''}` : '已記錄');
+  if (row && row.pnl > 0) confetti();
+});
+
+/* ---------- settings / backup ---------- */
+const setDlg = $('#setDlg');
+$('#setBtn').onclick = () => { renderSync(); $('#sName').value = state.settings.name || ''; $('#sCapital').value = state.settings.capital; $('#sErr').textContent = ''; setDlg.showModal(); };
+$('#sClose').onclick = () => setDlg.close();
+$('#bCode').onclick = connectCode;
+$('#sCode').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); connectCode(); } });
+$('#bCopyCode').onclick = copyCode;
+$('#bUnlink').onclick = () => { writeKey = null; syncError = null; save(SYNC_KEY_STORE, null); clearTimeout(pushT); syncState = 'off'; render(); toast('已中斷雲端同步（手機裡的資料還在）'); };
+$('#setForm').addEventListener('submit', ev => {
+  ev.preventDefault();
+  const cap = Number($('#sCapital').value);
+  if (!(cap > 0)) return ($('#sErr').textContent = '本金要大於 0');
+  state.settings.name = $('#sName').value.trim(); state.settings.capital = cap; persist();
+  setDlg.close(); render(); toast('設定已儲存');
+});
+function download(name, text, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function exportJson() {
+  if (demo || viewKey) { toast(viewKey ? '觀看模式不能匯出' : '範例資料不用備份'); return; }
+  download(`做單日記備份_${todayIso()}.json`, JSON.stringify({ app: 'trade-diary', version: 1, exportedAt: new Date().toISOString(), settings: state.settings, records: state.records }, null, 2), 'application/json');
+  state.lastBackup = Date.now(); persist(); render(); toast('備份檔已下載，傳到 LINE 或雲端存好');
+}
+$('#bExport').onclick = exportJson;
+$('#bCsv').onclick = () => {
+  const C = compute(state);
+  const head = ['日期', '權益總值', '出入金', '當日損益', '當日報酬率%', '累積報酬率%', '回撤%', '手續費+稅', '口數', '加權指數', '心得'];
+  const lines = C.rows.map(r => [r.date, r.equity, r.flow, Math.round(r.pnl), (r.ret * 100).toFixed(2), (r.cum * 100).toFixed(2), (r.dd * 100).toFixed(2), r.cost, r.lots, r.bClose ?? '', `"${(r.note || '').replace(/"/g, '""')}"`].join(','));
+  download(`做單日記_${todayIso()}.csv`, '﻿' + [head.join(','), ...lines].join('\r\n'), 'text/csv');
+};
+$('#bImport').onclick = () => $('#importFile').click();
+$('#importFile').addEventListener('change', async ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  try {
+    const j = JSON.parse(await f.text());
+    if (!Array.isArray(j.records) || !j.records.every(r => /^\d{4}-\d{2}-\d{2}$/.test(r.date) && isFinite(Number(r.equity)))) throw new Error('格式不對');
+    state = { settings: Object.assign(defaultState().settings, j.settings || {}), records: j.records.map(r => ({ date: r.date, equity: Number(r.equity), flow: Number(r.flow) || 0, cost: Number(r.cost) || 0, lots: Number(r.lots) || 0, note: String(r.note || '') })).sort((a, b) => a.date.localeCompare(b.date)), lastBackup: Date.now() };
+    demo = null; persist(); setDlg.close(); calMonth = null; render(); syncBench(); toast(`已還原 ${state.records.length} 天紀錄`);
+  } catch (e) { $('#sErr').textContent = '這不是有效的備份檔：' + e.message; }
+  ev.target.value = '';
+});
+let wipeArmed = false;
+$('#bWipe').onclick = () => {
+  if (!wipeArmed) { wipeArmed = true; $('#bWipe').textContent = '⚠️ 確定嗎？再按一次就全部刪掉（建議先匯出備份）'; setTimeout(() => { wipeArmed = false; $('#bWipe').textContent = '🗑️ 清除全部資料'; }, 4000); return; }
+  state = defaultState(); persist(); wipeArmed = false; $('#bWipe').textContent = '🗑️ 清除全部資料'; setDlg.close(); render(); toast('已清除');
+};
+
+/* ---------- theme / misc ---------- */
+function applyTheme(t) {
+  if (t) document.documentElement.setAttribute('data-theme', t); else document.documentElement.removeAttribute('data-theme');
+  // 手動選的深淺色兩個 meta 都跟著換；自動時各自照系統設定
+  document.querySelectorAll('meta[name="theme-color"]').forEach(m => { m.content = (t ? t === 'dark' : /dark/.test(m.media)) ? '#121b2e' : '#fffaf0'; });
+}
+let theme = null; try { theme = localStorage.getItem(THEME_KEY); } catch (e) {}
+applyTheme(theme);
+$('#themeBtn').onclick = () => {
+  const dark = document.documentElement.getAttribute('data-theme') ? document.documentElement.getAttribute('data-theme') === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  theme = dark ? 'light' : 'dark'; applyTheme(theme); try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+  render();
+};
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (!theme) { applyTheme(null); render(); } });
+document.querySelectorAll('[data-tab-btn]').forEach(b => b.onclick = () => setTab(b.dataset.tabBtn));
+$('#tabAdd').onclick = () => openEntry();
+mq.addEventListener('change', render);
+let tt; function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2600); }
+let rz; let lastW = innerWidth;
+addEventListener('resize', () => { if (innerWidth === lastW) return; lastW = innerWidth; clearTimeout(rz); rz = setTimeout(render, 150); });
+
+/* ---------- 範例資料 ---------- */
+function makeDemo() {
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const gauss = () => { let u = 0, v = 0; while (!u) u = rnd(); while (!v) v = rnd(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const days = []; const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - 1);
+  while (days.length < 48) { if (d.getDay() % 6) days.unshift(isoOf(d)); d.setDate(d.getDate() - 1); }
+  let eq = CAPITAL0; const notes = { 3: '第一次用停損單，有照做', 9: '追高被巴，下次等回測', 17: '連賠三天，今天休息只看盤', 24: '入金一萬，口數不加', 31: '順勢抱單，賺最多的一天', 40: '手癢多做了幾趟，手續費好痛' };
+  const records = days.map((date, i) => {
+    const flow = i === 24 ? 10000 : 0;
+    const lots = rnd() < 0.18 ? 0 : 1 + Math.floor(rnd() * (i === 40 ? 12 : 5));
+    const cost = lots * 32;
+    const K = CAPITAL0 / 40000; // 範例的起伏跟著本金放大，百分比才像真的
+    const drift = (i > 12 && i < 20 ? -240 : 170) * K;
+    const gross = lots ? Math.round(drift + gauss() * 520 * K + (i === 31 ? 2400 * K : 0)) : 0;
+    eq = Math.round(eq + flow + gross - cost);
+    return { date, equity: eq, flow, cost, lots, note: notes[i] || '' };
+  });
+  return { settings: { name: '範例', capital: CAPITAL0 }, records, lastBackup: Date.now() };
+}
+
+/* ---------- start ---------- */
+if (viewKey) document.body.classList.add('view-mode');
+if (!viewKey && location.hash === '#demo' && !state.records.length) demo = makeDemo();
+wireScene();
+render();
+playIntro();
+renderSync();
+syncBench();
+initSync();
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+setInterval(() => { if (document.visibilityState === 'visible') syncBench(); }, 30 * 60 * 1000);
+})();
+</script>
+</body>
+</html>
