@@ -565,6 +565,7 @@ body.m .chips { top: var(--top-h); background: var(--topbar); backdrop-filter: n
 /* 手機上同步標籤只留圖示，標題才不會被擠成「宋睿洋的做…」 */
 .sync-badge .sb-t { margin-left: 3px; }
 @media (max-width: 760px) { .sync-badge .sb-t { display: none; } .sync-badge { padding: 4px 8px; } }
+@media (max-width: 380px) { .top-in { gap: 6px; } .brand { gap: 7px; } #brandName { font-size: 16px; letter-spacing: 0; } .top .icon-btn { width: 42px; height: 42px; } }   /* 375／360 寬也放得下「宋睿洋的做單日記」 */
 
 /* 對話框（手機＝底部滑出）、輸入框 */
 dialog { background: var(--card); border: 2px solid var(--line); box-shadow: none; }
@@ -574,7 +575,7 @@ dialog::backdrop { background: rgba(38, 27, 54, .5); }
 .field input, .field textarea, .date-row input[type=date] { border: 2px solid var(--line); background: var(--field); border-radius: 14px; }
 .field input:focus, .field textarea:focus { outline: 3px solid color-mix(in srgb, var(--pick) 55%, transparent); outline-offset: 0; border-color: var(--pick); }
 .dlg-actions.sticky { border-top: 2px solid var(--line); }
-.toast { background: var(--toast); color: var(--toast-ink); border: 2px solid #fff; border-radius: 999px; box-shadow: 0 4px 0 rgba(38, 27, 54, .35); }
+.toast { background: var(--toast); color: var(--toast-ink); border: 2px solid #fff; border-radius: 18px; box-shadow: 0 4px 0 rgba(38, 27, 54, .35); }
 
 /* 輸入提示字、鍵盤焦點、圖表零線、漏水筒警示 */
 ::placeholder { color: var(--muted); opacity: 1; }
@@ -1176,7 +1177,8 @@ async function syncBench() {
     await sleep(350);
   }
   benchStatus = failed && !Object.keys(bench.closes).length ? 'fail' : (failed ? 'partial' : 'ok');
-  if (changed) { save(BENCH_KEY, bench); render(); } else renderBenchNote();
+  if (changed) save(BENCH_KEY, bench);
+  if (changed || benchStatus === 'fail') render(); else renderBenchNote(); // 抓不到時主卡也要改口，不要一直說讀取中
 }
 
 /* ---------- charts（手刻 SVG，含滑鼠/手指十字線） ---------- */
@@ -1611,7 +1613,7 @@ function heroHtml(C) {
       `累積報酬 ${sPct(s.cum)}：從 ${money(C.capital)} 元開始算到現在，入金出金的影響已經扣掉，可以直接跟大盤比。`)}
     ${tile('🏁 同期大盤', s.benchCum == null ? '—' : arrow(s.benchCum) + ' ' + sPct(s.benchCum), tone(s.benchCum), s.benchCum == null ? noBench[0] : (s.cum >= s.benchCum ? '🏆 目前贏大盤' : '目前輸大盤'),
       s.benchCum == null ? noBench[1] : `同一段時間大盤 ${sPct(s.benchCum)}，${gap >= 0 ? `你領先大盤 ${pp(gap)} 🏆` : `你落後大盤 ${pp(gap)}。不用急，守紀律最重要。`}`)}
-    ${tile('💰 淨損益', sMoney(s.netPnl), tone(s.netPnl), '已扣成本、不含入出金',
+    ${tile('💰 淨損益', sMoney(s.netPnl), tone(s.netPnl), '扣成本、不含出入金',
       `淨損益 ${sMoney(s.netPnl)} 元：所有賺賠加起來（已經扣掉手續費和稅），入金、出金不算在裡面。`)}
     ${tile('🛡️ 最大回撤', s.maxDd < 0 ? sPct(s.maxDd) : '0.00%', s.maxDd < 0 ? 'down' : 'flat', `目前離高點 ${sPct(s.curDd)}`,
       s.maxDd < 0 ? `最大回撤 ${sPct(s.maxDd)}：帳戶從最高點最多掉過這麼多，現在離高點 ${sPct(s.curDd)}。超過 20% 就該減少口數。` : '還沒有從高點往下掉過，防守滿分 🛡️')}
